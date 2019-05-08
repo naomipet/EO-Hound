@@ -84,7 +84,7 @@ function redraw(){
       var histogram_CC = ui.Chart.feature.histogram({
         features: granuleImages,
         property: 'CLOUDY_PIXEL_PERCENTAGE',
-        minBucketWidth: 1
+        minBucketWidth: 5
       }).setOptions(histOptions);
       panel.widgets().set(0, histogram_CC); 
 
