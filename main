@@ -1,0 +1,150 @@
+var Query = require('users/naomipet/draft:DataQuery');
+
+/***** define area and time ******/
+var start = ee.Date('2018-03-01');
+var finish = ee.Date('2019-04-7');
+var bbox = ee.FeatureCollection('users/naomipet/quadrato');
+var collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(bbox)
+                .filterDate(start,finish);
+Map.centerObject(bbox, 7)
+   
+
+/***** UI initialization *****/
+var panel = ui.Panel({
+  layout: ui.Panel.Layout.flow('vertical'),
+  style: {position: 'bottom-right', height: '400px', width:'350px'}
+});   
+                 
+var histOptions = {
+  title: 'Sentinel Cloud Cover',
+  hAxis: {title: '% Cloud Cover'},
+  vAxis: {title: 'Image count'},
+  colors: ['orange']
+};
+
+var button = ui.Button({
+  label: 'Map Center',
+  onClick: function() {
+  Map.centerObject(bbox, 7);
+}});
+
+button.style().set({
+  width: '100px',
+  position: 'bottom-right',
+});
+Map.add(button);
+
+/***** calc statistics about area *****/
+var bboxArea = bbox.geometry().area().divide(100 * 100);
+var sentinelFootprint = ee.FeatureCollection('users/naomipet/sentinel2_tiles_world').filterBounds(bbox);
+var covarage = Query.getCoverage(sentinelFootprint, bbox, bboxArea);
+
+/***** present bbox ****/
+//var bbox_empty = Query.EmptyRectangle(bbox, 10);
+//Map.addLayer(bbox_empty,{color: '006600', strokeWidth: 25}, 'study area');
+
+/***** Filter clouds and clip to bbox *****/
+var filteredCollection = collection.filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5))
+                .map(function(im){return im.clip(bbox)})
+                .map(Query.maskS2clouds);
+
+/***** Create mosaic list *****/
+var dayDiff = 1;
+var diff = finish.difference(start, 'day')
+
+// Make a list of all dates
+var range = ee.List.sequence(0, diff.subtract(1),dayDiff).map(function(day){return start.advance(day,'day')})
+// Iterate over the range to make a new list
+var mosList = Query.CreateMosaicList(filteredCollection, range, dayDiff)
+Map.addLayer(ee.Image(mosList.get(0)), {bands: ['B4', 'B3', 'B2'], max: 3000}, 'image sample');
+
+/***** Export Image *****/
+/*
+var image1 = ee.Image(mosList.get(0));
+Export.image.toDrive({
+image: image1,
+description: 'imageToDriveExample',
+scale: 10,
+region: geometry
+});
+*/
+var granuleName ="none"
+/*function to be launched every time a granule is chosen*/
+function redraw(){
+  
+  if(granuleName != 'none'){
+    var info_text1 = ee.String("Info for Granule " + granuleName);
+    Query.PrintLabel(info_text1, 1, panel);
+    var granuleFeature = covarage.filter(ee.Filter.eq("Name", granuleName));
+      var area = ee.Number(ee.Feature(granuleFeature.toList(granuleFeature.size()).get(0)).get('areaHa'));
+      var featureColor = Query.GetColor(area);
+      Map.addLayer(granuleFeature,{color: featureColor}, 'selection');
+      var granuleImages = collection.filterMetadata('MGRS_TILE', 'equals', granuleName);
+      var count = granuleImages.size();
+      var histogram_CC = ui.Chart.feature.histogram({
+        features: granuleImages,
+        property: 'CLOUDY_PIXEL_PERCENTAGE',
+        minBucketWidth: 1
+      }).setOptions(histOptions);
+      panel.widgets().set(0, histogram_CC); 
+
+      var info_text2 = ee.String("number of images: " + count.getInfo());
+      Query.PrintLabel(info_text2, 2, panel);
+
+      var info_text3 = ee.String("Bounding box coverage in Precent: " + area.getInfo().toFixed(2));
+      Query.PrintLabel(info_text3, 3, panel);
+
+      var dates = Query.GetImageDates(granuleImages);
+      var lastDayIndex = dates.size().add(-1);
+      var firstDay = ee.Date(dates.get(0)).format('dd/MM/YYYY');
+      var lastDay = ee.Date(dates.get(lastDayIndex)).format('dd/MM/YYYY');
+      var info_text4 = ee.String("Date range: " + firstDay.getInfo() + " - " + lastDay.getInfo());
+      Query.PrintLabel(info_text4, 4, panel);
+
+      var diffs = Query.GetDayDif(dates);
+      var info_text5 = ee.String("Average Time Between Acquisitions: " + diffs.reduce(ee.Reducer.mean()).getInfo().toFixed(2));
+      Query.PrintLabel(info_text5, 5, panel);
+
+      var cloudStats = granuleImages.reduceColumns({
+        reducer: ee.Reducer.mean(),
+        selectors: ['CLOUDY_PIXEL_PERCENTAGE'],
+      })
+      var info_text6 = ee.String("Average Cloud Cover: " + cloudStats.get('mean').getInfo().toFixed(2));
+      Query.PrintLabel(info_text6, 6, panel);
+  }
+}
+
+var redrawGranule = function(name){
+  Query.RemoveLayer('selection', panel) //remove previously view granule
+  granuleName = name
+  redraw()
+}
+
+var redrawCollection = function(name){
+  print(name)
+    collection = ee.ImageCollection('COPERNICUS/'+name).filterBounds(bbox)
+                .filterDate(start,finish);
+  redraw()
+}
+
+/*add granules to map*/
+Query.AddFeatureLayer(covarage);
+
+/*get names of granules*/
+var names = sentinelFootprint.aggregate_array('Name')
+var names = ee.List(names).add('none');
+
+var collections = ['S2', 'S2_SR']
+var selectCollection = ui.Select({items: collections, onChange: redrawCollection });
+selectCollection.setPlaceholder('Choose Image Collection'); 
+Map.add(selectCollection);
+
+// initialize combobox and fire up the redraw function
+var selectGranule = ui.Select({items: names.getInfo(), onChange: redrawGranule });
+selectGranule.setPlaceholder('Choose a Granule'); 
+Map.add(selectGranule);
+
+
+
+
+ui.root.add(panel);

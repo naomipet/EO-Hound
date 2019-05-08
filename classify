@@ -1,0 +1,70 @@
+var Query = require('users/naomipet/DuneDetection:DataQuery');
+var table = ee.FeatureCollection("users/marinaranghetti/training"),
+    geometry = /* color: #98ff00 */ee.Geometry.Polygon(
+        [[[53.602934163845475, 23.546081238567844],
+          [53.602934163845475, 23.53282225788501],
+          [53.618898671902116, 23.53282225788501],
+          [53.618898671902116, 23.546081238567844]]], null, false);
+var start = ee.Date('2019-03-01');
+var finish = ee.Date('2019-04-7');  
+var start1 = ee.Date('2019-01-01');
+var finish1 = ee.Date('2019-02-7');
+var dune = ee.FeatureCollection('users/marinaranghetti/slip');
+print(dune)
+var bbox = ee.FeatureCollection('users/marinaranghetti/training');
+var bands = ['B2', 'B3', 'B4', 'B6'];
+var filteredCollection = ee.ImageCollection('COPERNICUS/S2_SR').filterBounds(bbox)
+                .filterDate(start,finish).filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5)).select(bands);
+//var trainingCollection =  filteredCollection.filterBounds(bbox)
+var filteredCollection1 = ee.ImageCollection('COPERNICUS/S2').filterBounds(bbox)
+                .filterDate(start1,finish1).filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5)).select(bands);
+
+
+var dayDiff = 1;
+var diff = finish.difference(start, 'day')
+var diff1 = finish1.difference(start1, 'day')
+
+var range = ee.List.sequence(0, diff.subtract(1),dayDiff).map(function(day){return start.advance(day,'day')})
+var range1 = ee.List.sequence(0, diff1.subtract(1),dayDiff).map(function(day){return start1.advance(day,'day')})
+// Iterate over the range to make a new list
+var mosList = Query.CreateMosaicList(filteredCollection, range, dayDiff)
+var mosList1 = Query.CreateMosaicList(filteredCollection1, range1, dayDiff)
+print(mosList1)
+var img = ee.Image(mosList.get(0));
+var img1 = ee.Image(mosList1.get(0));
+Map.addLayer(ee.Image(mosList.get(0)), {bands: ['B4', 'B3', 'B2'], max: 3000}, 'image sample');
+Map.addLayer(ee.Image(mosList1.get(0)), {bands: ['B4', 'B3', 'B2'], max: 3000}, 'image sample1');
+
+Map.centerObject(dune, 15);
+Map.addLayer(dune,{color: '006600'}, 'study area');
+Map.addLayer(bbox,{color: '000066'}, 'study area');
+
+
+var classProperty = 'dunes';
+
+var training = img.sampleRegions({
+  collection: dune,
+  properties: [classProperty],
+  scale: 10
+});
+
+var classifier = ee.Classifier.randomForest().train({
+  features: training,
+  classProperty: classProperty,
+});
+
+// Classify the composite.
+var classified = img.classify(classifier);
+var classified1 = img1.classify(classifier);
+Map.addLayer(classified, {min: 0, max: 2, palette: ['red', 'green', 'blue']});
+Map.addLayer(classified1, {min: 0, max: 2, palette: ['red', 'green', 'blue']});
+
+
+// Instantiate the clusterer and train it.
+var clusterer = ee.Clusterer.wekaKMeans(4).train(training);
+
+// Cluster the input using the trained clusterer.
+var result = img.cluster(clusterer);
+
+// Display the clusters with random colors.
+Map.addLayer(result.randomVisualizer(), {}, 'clusters');
