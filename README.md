@@ -1,5 +1,5 @@
 # GEEProject
-All the data are inside the folder Console/Data.
+All the data are inside the folder consoleCode/Data.
 
 main and data query are the code for the general statistic.
 classify in the specific code we used for test the classification.
