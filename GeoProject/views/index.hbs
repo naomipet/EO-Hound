@@ -13,11 +13,11 @@ for details.
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  
+
     <!-- mine css -->
     <link rel="stylesheet" type="text/css" href="/static/main.css">
 
-   
+
   </head>
   <body>
 
@@ -33,24 +33,25 @@ for details.
                   <a class="nav-item nav-link" href="/views/about.hbs">About</a>
                   <a class="nav-item nav-link" href="#">Map</a>
                 </div>
-              
+
               </div>
             </div>
           </nav>
-        </header>    
+        </header>
     <!-- The element into which we render the Google Map. -->
-   
-       
+
+
           <div id="map" class="col-md-12"></div>
+          <div id="drop-container"><div id="drop-silhouette"></div></div>
+          <div id="info" class="col-md-12"></div>
           </div>
-   
+
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="http://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
 
 
     <!-- Load our JavaScript file. -->
@@ -61,11 +62,86 @@ for details.
       // This function will run after the Google Maps API has finished leading,
       // as specified by the &callback=initMap parameter in the Maps API script
       // URL (below).
+      var info = document.getElementById('info');
+      info.innerHTML = '{{prop}}';
+
+
+      function initEvents() {
+        // set up the drag & drop events
+        var mapContainer = document.getElementById('map');
+        var dropContainer = document.getElementById('drop-container');
+
+        // map-specific events
+        mapContainer.addEventListener('dragenter', showPanel, false);
+
+        // overlay specific events (since it only appears once drag starts)
+        dropContainer.addEventListener('dragover', showPanel, false);
+        dropContainer.addEventListener('drop', handleDrop, false);
+        dropContainer.addEventListener('dragleave', hidePanel, false);
+      }
+
+      function showPanel(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        document.getElementById('drop-container').style.display = 'block';
+        return false;
+      }
+
+      function hidePanel(e) {
+        document.getElementById('drop-container').style.display = 'none';
+      }
+
+      function handleDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        hidePanel(e);
+
+        var files = e.dataTransfer.files;
+        if (files.length) {
+          // process file(s) being dropped
+          // grab the file data from each file
+          for (var i = 0, file; file = files[i]; i++) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+              var geojson = loadGeoJsonString(e.target.result);
+              var geometry = geojson.features[0].geometry.coordinates.toString()
+              info.innerHTML = 'wait for response'
+              fetch("http://localhost:3000/filter/Sentinel1C/2018-02-01/2018-03-01/100/"+geometry)
+              .then(function(response) {
+                return response.json();
+              })
+              .then(function(myJson) {
+                //console.log(myJson.areas)
+                info.innerHTML = 'areas : ' + JSON.stringify(myJson['areas']);
+                info.innerHTML += '<br>clouds : ' + JSON.stringify(myJson['clouds']);
+                info.innerHTML += '<br>count : ' + JSON.stringify(myJson['count']);
+                info.innerHTML += '<br>minDate : ' + JSON.stringify(myJson['minDate']);
+                info.innerHTML += '<br>maxDate : ' + JSON.stringify(myJson['maxDate']);
+                info.innerHTML += '<br>names : ' + JSON.stringify(myJson['names']);
+              });
+            };
+            reader.onerror = function(e) {
+              console.error('reading failed');
+            };
+            reader.readAsText(file);
+          }
+        } else {
+          // process non-file (e.g. text or html) content being dropped
+          // grab the plain text version of the data
+          var plainText = e.dataTransfer.getData('text/plain');
+          if (plainText) {
+            loadGeoJsonString(plainText);
+          }
+        }
+        // prevent drag event from bubbling further
+        return false;
+      }
       var initMap = function() {
         // The values of mapid and token for the map tiles, generated by Earth
         // Engine using the Node.js script server.js, are injected here using
         // the Handlebars templating engine.
-        initialize('{{ mapid }}', '{{ token }}');
+        initialize();
+        initEvents();
       };
     </script>
 

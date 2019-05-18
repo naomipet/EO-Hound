@@ -14,5 +14,6 @@
     "deploy": "gcloud app deploy --project ee-demos --version server-auth-nodejs --no-promote"
   },
   "author": "Google LLC",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "proxy": "http://localhost:3000"
 }
