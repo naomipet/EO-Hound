@@ -5,8 +5,12 @@
   "main": "server.js",
   "dependencies": {
     "@google/earthengine": "^0.1.x",
+    "body-parser": "^1.19.0",
     "express": "^4.16.4",
-    "express-handlebars": "^3.0.0"
+    "express-handlebars": "^3.0.0",
+    "fs": "0.0.1-security",
+    "multer": "^1.4.1",
+    "path": "^0.12.7"
   },
   "devDependencies": {},
   "scripts": {
@@ -14,6 +18,5 @@
     "deploy": "gcloud app deploy --project ee-demos --version server-auth-nodejs --no-promote"
   },
   "author": "Google LLC",
-  "license": "Apache-2.0",
-  "proxy": "http://localhost:3000"
+  "license": "Apache-2.0"
 }
