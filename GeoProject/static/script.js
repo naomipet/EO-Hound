@@ -3,7 +3,7 @@
  * @param  {string} mapId
  * @param  {string} token
  */
-const initialize = (imageCollection, dateStart, dateEnd, cloudFilter) => {
+const initialize = () => {
   // The Google Maps API calls getTileUrl() when it tries to display a map
   // tile. This is a good place to swap in the MapID and token we got from
   // the Node.js script. The other values describe other properties of the
@@ -46,36 +46,16 @@ const initialize = (imageCollection, dateStart, dateEnd, cloudFilter) => {
   map.overlayMapTypes.push(null);        // Placeholder for ee
   map.overlayMapTypes.push(null);        // Placeholder for ee
 
-  //form
+  //form and general statistic
   var formInput = document.getElementById('form');
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(formInput);
 
   var divOpen = document.getElementById("formClose");
   map.controls[google.maps.ControlPosition.LEFT_TOP].push(divOpen);
 
+  var statisticDiv = document.getElementById("statistic");
+  map.controls[google.maps.ControlPosition.RIGHT_TOP].push(statisticDiv);
 
-  //close on click
-  var divClose = document.getElementById("form");
-  var divOpen = document.getElementById("formClose");
-
-
-  $("#closeTab").click(function(){
-    $(divClose).fadeToggle();
-    $(divOpen).fadeToggle();
-  });
-
-  $("#openTab").click(function(){
-    $(divOpen).fadeToggle();
-    $(divClose).fadeToggle();
-
-  });
-
-  if(imageCollection != ""){
-    $("select[name='imageCollection']").val(imageCollection);
-    $("input[name='dateStart']").val(dateStart);
-    $("input[name='dateEnd']").val(dateEnd);
-    $("input[type='number']").val(Number(cloudFilter));
-  };
 };
 
 var addLayers = function(mapId, token){

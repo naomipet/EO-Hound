@@ -6,7 +6,7 @@ for details.
 -->
 <html>
   <head>
-    <title>Dune Detection</title>
+    <title>EO-Hound</title>
 
      <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -23,110 +23,103 @@ for details.
 
   </head>
   <body>
-
-     <header class="site-header">
-          <nav id="mainNavbar" class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
-            <div class="container">
-              <a class="navbar-brand mr-4" href="/">Dune Detection</a>
-              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="collapse navbar-collapse" id="navbarToggle">
-                <div class="navbar-nav mr-auto">
-                  <a class="nav-item nav-link" href="/about">About</a>
-                  <a class="nav-item nav-link" href="#">Map</a>
-                </div>
-
-              </div>
+    <header class="site-header">
+      <nav id="mainNavbar" class="navbar navbar-expand-md navbar-dark bg-steel fixed-top"> 
+          <a class="navbar-brand mr-4" href="/">EO Hound</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+              <a class="nav-item nav-link" href="/about">DOCUMENTATION</a>
             </div>
-          </nav>
-        </header>
+        </div>
+      </nav>
+    </header>
 
-        <!-- form -->
+  <!-- form -->
 
   <div id="formClose">
     <span id="openTab">
-    <i class="fas fa-sliders-h"></i>
+      <i class="fas fa-sliders-h"></i>
     </span>
   </div>
 
     <div id="form" class="container">
-    <div class="row">
-      <div class="col-lg">
-        <span id="closeTab">
-        <i class="far fa-times-circle"></i>
-        </span>
-        <h3>Insert Search Criteria</h3>
-
-        <hr class="style14">
-
+      <div class="row">
+        <div class="col-lg">
+          <span id="closeTab">
+            <i class="far fa-times-circle"></i>
+          </span>
+          <h3>Insert Search Criteria</h3>
+          <hr class="style14">
         <div>
-            <form action="/filter" method="GET" enctype="multipart/form-data" id="myForm">
-                <label for="collection">Select your collection: </label>
-                <div class="form-group">
-                    <select class="form-control" name="imageCollection">
-                      <option value="Landsat">Landsat</option>
-                      <option value="Sentinel1C">Sentinel 1C</option>
-                      <option value="Sentinel2A">Sentinel 2A</option>
-                    </select>
-                  </div>
-                <label for="dateStart dateEnd ">Sensing period: </label>
-                <div class="form-group">
-                    <input class="form-control inputDisp" type="date" name="dateStart" placeholder="Start date" required>
-                    <input class="form-control inputDisp float-right" type="date" name="dateEnd" placeholder="End date" required>
-                </div>
-                <label for="jsonBbox">Input Bounding Box: </label>
-                <div class="form-group">
-                    <input class="form-control" type="file" name="jsonBbox" id="bbox" placeholder="GeoJson" accept=".geojson">
-                </div>
-                <div class="form-group">
-                  <input class="form-control" type="text" name="coordinates" id="geometry" style="display: none;">
-                </div>
-                <label for="cloudFilter">Cloud Filter: </label>
-                <div class="form-group">
-                    <input class="form-control" type="number" name="cloudFilter" placeholder="Cloud filter" min="0" max="100" required>
-                </div>
-                <div class="form-group">
-                    <button class="btn btn-lg btn-success btn-block">Run</button>
-                </div>
-            </form>
+        <form action="/filter" method="GET" enctype="multipart/form-data" id="myForm">
+            <label for="collection">Select your collection: </label>
+            <div class="form-group">
+                <select class="form-control" name="imageCollection">
+                  <option value="Landsat">Landsat</option>
+                  <option value="Sentinel1C">Sentinel 1C</option>
+                  <option value="Sentinel2A">Sentinel 2A</option>
+                </select>
+            </div>
+            <label for="dateStart dateEnd ">Sensing period: </label>
+            <div class="form-group">
+                <input class="form-control inputDisp" type="date" name="dateStart" placeholder="Start date" required>
+                <input class="form-control inputDisp float-right" type="date" name="dateEnd" placeholder="End date" required>
+            </div>
+            <label for="jsonBbox">Input Bounding Box: </label>
+            <div class="form-group">
+                <input class="form-control" type="file" name="jsonBbox" id="bbox" placeholder="GeoJson" accept=".geojson">
+            </div>
+            <div class="form-group">
+              <input class="form-control" type="text" name="coordinates" id="geometry">
+            </div>
+            <label for="cloudFilter">Cloud Filter: </label>
+            <div class="form-group">
+                <input class="form-control" type="number" name="cloudFilter" placeholder="Cloud filter" min="0" max="100" required>
+            </div>
+            <div class="form-group">
+                <button id="buttonColor" class="btn btn-lg btn-primary btn-block">Run</button>
+            </div>
+        </form>
         </div>
       </div>
     </div>
-</div>
+  </div>
 
-    <!-- The element into which we render the Google Map. -->
-    <div id="map"></div>
+  <!-- The element into which we render the Google Map. -->
+  <div id="map"></div>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="http://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="http://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
 
 
-    <!-- Load our JavaScript file. -->
-    <script src="/static/script.js"></script>
+  <!-- Load our JavaScript file. -->
+  <script src="/static/script.js"></script>
 
-    <!-- Create a callback to boot our application. -->
-    <script>
-      // This function will run after the Google Maps API has finished leading,
-      // as specified by the &callback=initMap parameter in the Maps API script
-      // URL (below).
-      // $('#myForm').on('submit', function() { // Fired listener when submit button is clicked.
-      //   $.ajax({
-      //     url: '/filter',
-      //     dataType : 'json', // Try text also, maybe the api donn't send result in json. Text always work.
-      //     data: $('#myForm').serialize(), // The form to send.
-      //     success : function (response) {// Get response on successful sever connection.
-      //       var data = response['dataStart']; // or alert
-      //     }, error: function (err) { // Get error on failed connection to server.
-      //       console.log(err); // or alert
-      //     }
-      //   })
-      // });
-      document.forms['myForm'].addEventListener('submit', (event) => {
+  <!-- Create a callback to boot our application. -->
+  <script>
+    // This function will run after the Google Maps API has finished leading,
+    // as specified by the &callback=initMap parameter in the Maps API script
+    // URL (below).
+    // $('#myForm').on('submit', function() { // Fired listener when submit button is clicked.
+    //   $.ajax({
+    //     url: '/filter',
+    //     dataType : 'json', // Try text also, maybe the api donn't send result in json. Text always work.
+    //     data: $('#myForm').serialize(), // The form to send.
+    //     success : function (response) {// Get response on successful sever connection.
+    //       var data = response['dataStart']; // or alert
+    //     }, error: function (err) { // Get error on failed connection to server.
+    //       console.log(err); // or alert
+    //     }
+    //   })
+    // });
+    document.forms['myForm'].addEventListener('submit', (event) => {
     event.preventDefault();
     $.ajax({
         url: '/filter',
@@ -151,12 +144,12 @@ for details.
           console.log(err); // or alert
         }
       })
-});
-document.getElementById('bbox').onchange = function(e) {
+  });
+  document.getElementById('bbox').onchange = function(e) {
     readFile(e.srcElement.files[0]);
-};
+  };
 
-function readFile(file) {
+  function readFile(file) {
     var reader = new FileReader();
     reader.onload = readSuccess;
     function readSuccess(evt) {
@@ -165,19 +158,36 @@ function readFile(file) {
       document.getElementById("geometry").value = geometry;
     };
     reader.readAsText(file);
-}
+  }
 
-      var initMap = function() {
-        // The values of mapid and token for the map tiles, generated by Earth
-        // Engine using the Node.js script server.js, are injected here using
-        // the Handlebars templating engine.
-        initialize('{{ imageCollection }}', '{{ dateStart }}', '{{ dateEnd }}', '{{ cloudFilter }}');
-      };
+  //DOM container form and staistic
+  var divClose = document.getElementById("form");
+  var divOpen = document.getElementById("formClose");
+  //var divStatistic = document.getElementById("statistic");
 
-    </script>
 
-    <!-- Load the Google Maps API, and run the initMap() callback when finished. -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAE_3AO7GubgGCKKFU-1JhgiDJV_OEXEmQ&callback=initMap"
-            async defer></script>
+    $("#closeTab").click(function(){
+      $(divClose).fadeToggle();
+      $(divOpen).fadeToggle();
+    })
+
+    $("#openTab").click(function(){
+      $(divOpen).fadeToggle();
+      $(divClose).fadeToggle();
+    })
+
+
+  var initMap = function() {
+    // The values of mapid and token for the map tiles, generated by Earth
+    // Engine using the Node.js script server.js, are injected here using
+    // the Handlebars templating engine.
+    initialize();
+  };
+
+  </script>
+
+  <!-- Load the Google Maps API, and run the initMap() callback when finished. -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAE_3AO7GubgGCKKFU-1JhgiDJV_OEXEmQ&callback=initMap"
+          async defer></script>
   </body>
 </html>

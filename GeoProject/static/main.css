@@ -1,13 +1,14 @@
 html, body {
     background: #fafafa;
     color: #333333;
-    /* margin-top: 3.5rem; */
     height: 100%;
     width: 100%;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .bg-steel {
-    background-color: rgb(9, 119, 27);
+    background-color: rgb(47, 91, 183);
+    height: 60px;
 }
 .site-header .navbar-nav .nav-link {
     color: #ffffff;
@@ -21,19 +22,16 @@ html, body {
 font-weight: 500;
 }
 
-.site-header .navbar.scrolled {
-    background: rgb(24, 144, 44);
-    transition: background 500ms;
-}
-
 #info {
     width: 100%;
     height:100px;
+   
 }
 
 #map {
     width: 100%;
     height:100%;
+    margin-top: 60px;
 }
 
 #drop-container {
@@ -59,47 +57,41 @@ font-weight: 500;
 #form {
     width: 400px;
     height: auto; 
-    /* margin: 25px auto */
     background-color: rgba(255,255,255,0.9);
-    margin-top: 70px;
+    margin-top: 7px;
     margin-left: 10px;
     float: left;
     border-radius: 5px;
+    display: none;
 }
 
 #formClose {
     width: 40px;
     height: auto; 
-    /* margin: 25px auto */
-    background-color: rgba(255,255,255,0.8);
-    margin-top: 70px;
-    margin-left: 10px;
+    background-color: rgb(255,255,255);
+    margin-top: 7px;
+    margin-left: 4px;
     float: left;
     border-radius: 5px;
-    display: none;
     text-align: center;
 
 }
 #openTab {
-
-    width: 50px;
     font-size: x-large;
-    
 }
+
 #openTab:hover {
     
     width: 50px;
     font-size: x-large;
-    color: rgb(9, 119, 27);
-    
+    color: rgb(47, 91, 183);
 }
 
 h3 {
     font-weight: 700;
-    /* margin-bottom: 25px; */
     margin-top: 15px;
     text-align: center;
-    color: rgb(9, 119, 27);
+    color: rgb(47, 91, 183);
 }
 label {
     font-size: 15px;
@@ -133,10 +125,36 @@ hr.style14 {
     margin-top: 10px;
     width: 50px;
     font-size: large;
-    color: rgb(9, 119, 27);
+    color: rgb(47, 91, 183);
     
 }
   i.far.fa-times-circle {
     float: right;
 }
-  
+
+#buttonColor {
+    background-color: rgb(47, 91, 183);
+    border: 0;
+}
+
+/* header .navbar .navbar-brand img {
+    height: 54px;
+    padding-right: 3px;
+    width: 256px; */
+
+#imageHome {
+    height: 54px;
+    padding-right: 3px;
+    width: 256px;
+}
+
+#statistic {
+    height: 100px;
+    width: 10%;
+    background-color: orange;
+    display: none;
+}
+
+#geometry {
+    display: none;
+}
