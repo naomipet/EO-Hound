@@ -8,7 +8,8 @@ html, body {
 
 .bg-steel {
     background-color: rgb(47, 91, 183);
-    height: 60px;
+    /* height: 60px; */
+    width: 100%;
 }
 
 .site-header .navbar-nav .nav-link:hover {
@@ -47,11 +48,24 @@ html, body {
   background-position: center;
 }
 
+input[type=checkbox] {
+    transform: scale(2);
+    background-color: #ffffff;
+  
+  }
+.checkboxPosition {
+    margin-left: 9px
+}
+
+.marginSet {
+    margin-top: 0.5px
+}
+
 #form {
     width: 400px;
     height: auto; 
     background-color: rgba(255,255,255,0.9);
-    margin-top: 8px;
+    margin-top: 10px;
     margin-left: 10px;
     float: left;
     border-radius: 5px;
@@ -62,11 +76,12 @@ html, body {
     width: 40px;
     height: auto; 
     background-color: rgb(255,255,255);
-    margin-top: 3px;
+    /* margin-top: 5px; */
     margin-left: 10px;
     float: left;
     border-radius: 5px;
     text-align: center;
+    
 
 }
 #openTab {
@@ -80,12 +95,13 @@ html, body {
     color: rgb(47, 91, 183);
 }
 
-h3 {
+#formTitle {
     font-weight: 700;
     margin-top: 15px;
     text-align: center;
     color: rgb(47, 91, 183);
 }
+
 label {
     font-size: 15px;
     font-weight: 700;
@@ -100,50 +116,137 @@ hr.style14 {
     background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0); 
   }
 
-  .inputDisp {
-      width: 175px;
-      display: inline-block;
+.inputDisp {
+    width: 175px;
+    display: inline-block;
+}
+
+#closeTab {
+    float: right;
+    margin-top: 10px;
+    width: 50px;
+    font-size: large;
+    
   }
 
-  #closeTab {
-      float: right;
-      margin-top: 10px;
-      width: 50px;
-      font-size: large;
-      
-  }
-
-  #closeTab:hover {
+#closeTab:hover {
     float: right;
     margin-top: 10px;
     width: 50px;
     font-size: large;
     color: rgb(47, 91, 183);
-    
+
 }
   i.far.fa-times-circle {
     float: right;
 }
+
+.fa-spinner {
+ 
+    margin-right: 2.5%;
+    /* height: 120px; */
+    animation: spin 2s linear infinite;
+    
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+#geometry {
+    display: none;
+}
+
 
 #buttonColor {
     background-color: rgb(47, 91, 183);
     border: 0;
 }
 
+#containerStatGen {
+   /* display: none;
+     */
+    width: 400px;
+    height: 540px;
+    margin-right: 55px;
+    background-color: rgba(255,255,255,0.9);
+    border-radius: 5px;
 
-#imageHome {
-    height: 54px;
-    padding-right: 3px;
-    width: 256px;
 }
 
-#statistic {
-    height: 100px;
-    width: 10%;
-    background-color: orange;
-    display: none;
+.dropdownPosition {
+    margin-top: 15px;
+    margin-bottom: 10px;
 }
 
-#geometry {
-    display: none;
+#formTitleStat {
+    font-weight: 700;
+    text-align: center;
+    color: rgb(47, 91, 183);
 }
+
+
+.squareSmall {
+  
+    width: 100%;
+    height: 110px;
+    margin-bottom: 7%;
+    padding: 7px;
+    border-radius: 5px;
+    color: #ffffff;
+    transition: transform .2s;
+
+}
+
+.squareSmall:hover {
+    transform: scale(1.1);
+}
+
+
+#images {
+    background-color: rgb(66, 133, 244)
+}
+
+#areaOfInt {
+    background-color: rgb(219, 68, 55)
+}
+
+#cloud {
+    background-color: rgb(244, 160, 0)
+}
+
+#revTime {
+    background-color: rgb(15, 157, 88)
+}
+
+
+
+.iconSmall {
+    font-size: 30px;
+    margin-left: 7px; 
+    margin-top: 7px
+} 
+
+.resultSquareSmall  {
+    margin-top: 13px;
+    font-size: 17px;
+    float: left;
+    
+}
+
+.titleSquareSmall {
+
+    color: #ffffff;
+    padding-left: 10px; 
+    font-size: 17px;
+    line-height: 18px
+  
+}
+
+#chartBoxSmall {
+    width: 100%;
+    height: 155px;
+}
+
+

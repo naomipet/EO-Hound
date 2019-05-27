@@ -53,7 +53,7 @@ const initialize = () => {
   var divOpen = document.getElementById("formClose");
   map.controls[google.maps.ControlPosition.LEFT_TOP].push(divOpen);
 
-  var statisticDiv = document.getElementById("statistic");
+  var statisticDiv = document.getElementById("containerStatGen");
   map.controls[google.maps.ControlPosition.RIGHT_TOP].push(statisticDiv);
 
 };

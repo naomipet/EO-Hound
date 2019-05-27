@@ -20,6 +20,9 @@ for details.
 
     <!-- mine css -->
     <link rel="stylesheet" type="text/css" href="/static/main.css">
+    <link rel="stylesheet" type="text/css" href="/static/statistic.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
   </head>
   <body>
@@ -59,7 +62,7 @@ for details.
           <span id="closeTab">
             <i class="far fa-times-circle"></i>
           </span>
-          <h3>Insert Search Criteria</h3>
+          <h3 id="formTitle">Insert Search Criteria</h3>
           <hr class="style14">
         <div>
         <form action="/filter" method="GET" enctype="multipart/form-data" id="myForm">
@@ -80,6 +83,10 @@ for details.
             <div class="form-group">
                 <input class="form-control" type="file" name="jsonBbox" id="bbox" placeholder="GeoJson" accept=".geojson">
             </div>
+           <div class="form-check checkboxPosition">
+              <input type="checkbox" class="form-check-input" id="loadImage">
+              <label class="form-check-label marginSet" for="loadImage">Load Image Collection</label>
+            </div>
             <div class="form-group">
               <input class="form-control" type="text" name="coordinates" id="geometry">
             </div>
@@ -88,13 +95,125 @@ for details.
                 <input class="form-control" type="number" name="cloudFilter" placeholder="Cloud filter" min="0" max="100" required>
             </div>
             <div class="form-group">
-                <button id="buttonColor" class="btn btn-lg btn-primary btn-block">Run</button>
+                <button id="buttonColor" class="btn btn-lg btn-primary btn-block"><i class="fas fa-spinner"></i>Run</button>
             </div>
         </form>
         </div>
       </div>
     </div>
   </div>
+
+    <!-- General statistic container -->
+
+  <div id="containerStatGen" class="container">
+    <div class="row">
+      <div class="col-12">
+         <div class="dropdown dropdownPosition">
+            <button id="buttonColor" class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Choose Granule
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item" href="#">Granule1</a>
+              <a class="dropdown-item" href="#">Granules2</a>
+              <a class="dropdown-item" href="#">Granules2</a>
+            </div>
+          </div>  
+        <h3 id="formTitleStat">General Statistics</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6">
+        {{!-- number of images --}}
+        <div id="images" class="squareSmall">
+          <div class="row">
+            <div class="col-4">
+              <i class="fas fa-camera-retro iconSmall"></i>
+            </div>
+            <div class="col-8">
+               <div class="resultSquareSmall">
+               <p>510</p>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+          <div class="col-12">
+            <h4 class="titleSquareSmall">Number of Images</h4>
+          </div>
+        </div>
+        </div>
+        
+        {{!-- clouds --}}
+        <div id="cloud" class="squareSmall">
+          <div class="row">
+            <div class="col-4">
+              <i class="fas fa-cloud iconSmall"></i>
+            </div>
+            <div class="col-8">
+              <div class="resultSquareSmall">
+                <p>50%</p>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <h4 class="titleSquareSmall">Average Cloud Cover</h4>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      <div class="col-6">
+         {{!-- Area of Interest --}}
+        <div id="areaOfInt" class="squareSmall">
+          <div class="row">
+            <div class="col-4">
+              <i class="fas fa-draw-polygon iconSmall"></i>
+            </div>
+            <div class="col-8">
+              <div class="resultSquareSmall">
+               <p>100,50 kmq</p>
+               </div>
+            </div>
+          </div>
+          <div class="row">
+          <div class="col-12">
+            <h4 class="titleSquareSmall">Buonding Box Area</h4>
+          </div>
+        </div>
+        </div>
+        {{!-- Revisiting Time --}}
+        <div id="revTime" class="squareSmall">
+          <div class="row">
+            <div class="col-4">
+               <i class="fas fa-satellite iconSmall"></i>
+            </div>
+            <div class="col-8">
+              <div class="resultSquareSmall">
+                <p>5 Day</p>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <h4 class="titleSquareSmall">Revisiting Time</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+         <h3 id="formTitleStat">Graphs</h3>
+          {{!--  General stat graph --}}
+          <div id="chartBoxSmall">  
+            <canvas id="myChart"></canvas>
+          </div>
+         
+      </div>
+    </div>
+  </div>
+   
+
 
   <!-- The element into which we render the Google Map. -->
   <div id="map"></div>
@@ -112,6 +231,8 @@ for details.
 
   <!-- Create a callback to boot our application. -->
   <script>
+
+
     // This function will run after the Google Maps API has finished leading,
     // as specified by the &callback=initMap parameter in the Maps API script
     // URL (below).
@@ -152,6 +273,7 @@ for details.
           console.log(err); // or alert
         }
       })
+
   });
   document.getElementById('bbox').onchange = function(e) {
     readFile(e.srcElement.files[0]);
@@ -171,8 +293,8 @@ for details.
   //DOM container form and staistic
   var divClose = document.getElementById("form");
   var divOpen = document.getElementById("formClose");
+  var icnLoad = document.getElementsByClassName("fa-spinner");
   //var divStatistic = document.getElementById("statistic");
-
 
     $("#closeTab").click(function(){
       $(divClose).fadeToggle();
@@ -184,6 +306,32 @@ for details.
       $(divClose).fadeToggle();
     })
 
+    $("#buttonColor").click(function(){
+      $(icnLoad).fadeIn();
+    })
+
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'line',
+
+    // The data for our dataset
+    data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        datasets: [{
+            label: 'My First dataset',
+            backgroundColor: 'rgba(47,91,183,0.3)',
+            borderColor: 'rgb(47, 91, 183)',
+            data: [0, 10, 5, 2, 20, 30, 45]
+        }]
+    },
+
+    // Configuration options go here
+    options: {
+        maintainAspectRatio: false
+    }
+});
 
   var initMap = function() {
     // The values of mapid and token for the map tiles, generated by Earth

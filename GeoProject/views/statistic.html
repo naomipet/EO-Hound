@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<!--
+An example web page that creates and displays a custom Google Maps API Map Type
+for Earth Engine map tiles.  See Google Maps documentation on Custom Map Types
+for details.
+-->
+<html>
+  <head>
+    <title>EO-Hound</title>
+
+     <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- mine css -->
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+  </head>
+  
+  <body>
+  
+        <header class="site-header">
+                <nav id="mainNavbar" class="navbar navbar-expand-xl navbar-dark bg-steel">
+                    <a class="navbar-brand" href="#">EO Hound</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/">HOME</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link " href="/about">DOCUMENTATION</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                </header>
+
+
+<div class="containerBox">
+    <div class="row">
+        <div class="col-8">
+            <h4 class="titleStat">Statistics for Granule <strong>AAAA</strong> - Dates: <span id="dateStart">Date</span> to <span id="dateEnd">Date</span></h4>
+        </div>
+        <div class="col-4">
+            <button id="buttonColor" class="btn btn-lg btn-primary buttonPosition">Download Metadata</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <div id="images" class="square">
+                <div class="row">
+                    <div class="col-4">
+                        <i class="fas fa-camera-retro iconBig"></i>
+                    </divtitle>
+                    <div class="col-8">
+                        <div class="resultSquare">
+                            <p>510</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h4 class="titleSquare">Number of Images</h4>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div id="areaOfInt" class="square">
+                <div class="row">
+                    <div class="col-4">
+                        <i class="fas fa-draw-polygon iconBig"></i>
+                    </div>
+                    <div class="col-8">
+                        <div class="resultSquare">
+                            <p>100,50 kmq</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h4 class="titleSquare">Buonding Box Area</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div id="cloud" class="square">
+                <div class="row">
+                    <div class="col-4">
+                        <i class="fas fa-cloud iconBig"></i>
+                    </div>
+                    <div class="col-8">
+                        <div class="resultSquare">
+                            <p>50%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h4 class="titleSquare">Average Cloud Cover</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div id="revTime" class="square">
+                <div class="row">
+                    <div class="col-4">
+                        <i class="fas fa-satellite iconBig"></i>
+                    </div>
+                    <div class="col-8">
+                        <div class="resultSquare">
+                            <p>5 Day</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h4 class="titleSquare">Revisiting Time</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <h4 class="titleStat">Graphs</h4>
+            <div id="containerChart">  
+                <canvas id="myChart"></canvas>
+        </div>
+    </div>
+</div>     
+
+    <script>
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'line',
+
+    // The data for our dataset
+    data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        datasets: [{
+            label: 'My First dataset',
+            backgroundColor: 'rgba(47,91,183,0.3)',
+            borderColor: 'rgb(47, 91, 183)',
+            data: [0, 10, 5, 2, 20, 30, 45]
+        }]
+    },
+
+    // Configuration options go here
+    options: {
+        maintainAspectRatio: false
+    }
+});
+
+</script>
+
+
+       
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="http://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+
+  <!-- Load our JavaScript file. -->
+  <script src="/static/script.js"></script>
+
+  </body>
+</html>

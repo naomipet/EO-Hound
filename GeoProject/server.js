@@ -9,12 +9,6 @@ const ee = require('@google/earthengine');
 const express = require('express');
 const handlebars  = require('express-handlebars');
 var bodyParser = require('body-parser');
-const multer = require("multer");
-const fs = require("fs");
-const path = require("path");
-const upload = multer({
-    dest: "uploads/" // "uploads"
-});
 
 
 const app = express();
