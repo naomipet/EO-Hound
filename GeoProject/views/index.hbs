@@ -63,10 +63,8 @@
             <button id="buttonColor" class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Choose Granule
             </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#">Granule1</a>
-              <a class="dropdown-item" href="#">Granules2</a>
-              <a class="dropdown-item" href="#">Granules2</a>
+            <div id="granuleName" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          
             </div>
           </div>  
         <h3 id="formTitleStat">General Statistics</h3>
@@ -81,8 +79,8 @@
               <i class="fas fa-camera-retro iconSmall"></i>
             </div>
             <div class="col-8">
-               <div class="resultSquareSmall">
-               <p>510</p>
+               <div id="imageNumber" class="resultSquareSmall">
+                <p>510</p>
               </div>
             </div>
           </div>
@@ -199,6 +197,29 @@
     //     }
     //   })
     // });
+ //DOM container form and staistic
+  var divClose = document.getElementById("form");
+  var divOpen = document.getElementById("formClose");
+  var icnLoad = document.getElementsByClassName("fa-spinner");
+  var divStatistic = document.getElementById("containerStatGen");
+
+    $("#closeTab").click(function(){
+      $(divClose).fadeToggle();
+      $(divOpen).fadeToggle();
+    })
+
+    $("#openTab").click(function(){
+      $(divOpen).fadeToggle();
+      $(divClose).fadeToggle();
+      $(icnLoad).hide();
+
+    })
+
+    $("#buttonColor").click(function(){
+      $(icnLoad).show();
+    })
+
+
     document.forms['myForm'].addEventListener('submit', (event) => {
     event.preventDefault();
     $.ajax({
@@ -219,10 +240,24 @@
           addLayers(ids, tokens)
           loadGeoJson(granules)
           var params = $('#myForm').serialize()
+        
+          $(icnLoad).hide()
+          $(divStatistic).show()
+         
+          names.forEach(function(element) {
+            
+          $("#granuleName").append("<a class='dropdown-item' href='#'>" + element + "</a>")
+          })
+          //$("#imageNumber").append("<p>" + images + "</p>")
+
+          
+           
           window.open("/granule?name=" + names[0] + "&" + params);
         }, error: function (err) { // Get error on failed connection to server.
           console.log(err); // or alert
         }
+       
+   
       })
 
   });
@@ -241,25 +276,7 @@
     reader.readAsText(file);
   }
 
-  //DOM container form and staistic
-  var divClose = document.getElementById("form");
-  var divOpen = document.getElementById("formClose");
-  var icnLoad = document.getElementsByClassName("fa-spinner");
-  //var divStatistic = document.getElementById("statistic");
-
-    $("#closeTab").click(function(){
-      $(divClose).fadeToggle();
-      $(divOpen).fadeToggle();
-    })
-
-    $("#openTab").click(function(){
-      $(divOpen).fadeToggle();
-      $(divClose).fadeToggle();
-    })
-
-    $("#buttonColor").click(function(){
-      $(icnLoad).fadeIn();
-    })
+ 
 
 
     var ctx = document.getElementById('myChart').getContext('2d');

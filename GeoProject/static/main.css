@@ -16,6 +16,10 @@ html, body {
     color: #ffffff;
 }
 
+#logo {
+    width: 65px;
+    height: 50px;
+}
 
 #info {
     width: 100%;
@@ -165,8 +169,7 @@ hr.style14 {
 }
 
 #containerStatGen {
-   /* display: none;
-     */
+    display: none;
     width: 400px;
     height: 540px;
     margin-right: 55px;
@@ -239,6 +242,7 @@ hr.style14 {
 
     color: #ffffff;
     padding-left: 10px; 
+    margin-top: 7px;
     font-size: 17px;
     line-height: 18px
   
