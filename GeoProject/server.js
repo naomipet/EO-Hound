@@ -11,10 +11,17 @@ const handlebars  = require('express-handlebars');
 var bodyParser = require('body-parser');
 
 
+
 const app = express();
 
 
-app.engine('.hbs', handlebars({extname: '.hbs', cache: false}));
+app.engine ('hbs', handlebars( { 
+  extname: 'hbs', 
+  // defaultLayout: 'main',
+  defaultView: 'default', 
+  layoutsDir: __dirname + '/views/',
+  partialsDir: __dirname + '/views/partials/'
+} ) );
 app.set('view engine', '.hbs');
 app.use('/static', express.static('static'));
 app.use(bodyParser.urlencoded({extended: true}));
@@ -157,6 +164,7 @@ app.get('/granule', (request, response) => {
   AddFieldToJson(output, 'maxDate', maxDate.format('d-M-Y').getInfo())
   AddFieldToJson(output, 'revisitTime', revisitTime)
   response.send(output);
+  response.send('statistic');
 })
 
 app.get('/about', (request, response) => {
