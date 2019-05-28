@@ -69,22 +69,23 @@ input[type=checkbox] {
     width: 400px;
     height: auto; 
     background-color: rgba(255,255,255,0.9);
-    margin-top: 10px;
+    margin-top: 5px;
     margin-left: 10px;
     float: left;
     border-radius: 5px;
-    display: none;
+    /* display: none; */
 }
 
 #formClose {
     width: 40px;
     height: auto; 
     background-color: rgb(255,255,255);
-    /* margin-top: 5px; */
+    margin-top: 10px;
     margin-left: 10px;
     float: left;
     border-radius: 5px;
     text-align: center;
+    display: none;
     
 
 }
@@ -171,7 +172,7 @@ hr.style14 {
 #containerStatGen {
     display: none;
     width: 400px;
-    height: 540px;
+    height: 350px;
     margin-right: 55px;
     background-color: rgba(255,255,255,0.9);
     border-radius: 5px;

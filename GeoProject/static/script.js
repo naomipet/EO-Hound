@@ -48,10 +48,10 @@ const initialize = () => {
 
   //form and general statistic
   var formInput = document.getElementById('form');
-  map.controls[google.maps.ControlPosition.TOP_LEFT].push(formInput);
+  map.controls[google.maps.ControlPosition.LEFT_TOP].push(formInput);
 
   var divOpen = document.getElementById("formClose");
-  map.controls[google.maps.ControlPosition.LEFT_TOP].push(divOpen);
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(divOpen);
 
   var statisticDiv = document.getElementById("containerStatGen");
   map.controls[google.maps.ControlPosition.RIGHT_TOP].push(statisticDiv);

@@ -39,6 +39,8 @@ app.get('/', (request, response) => {
   response.render('index', {addLayer: false} )
 })
 
+
+
 app.get('/filter', (request, response) => {
 
 
@@ -164,12 +166,16 @@ app.get('/granule', (request, response) => {
   AddFieldToJson(output, 'maxDate', maxDate.format('d-M-Y').getInfo())
   AddFieldToJson(output, 'revisitTime', revisitTime)
   response.send(output);
-  response.send('statistic');
+ 
 })
 
 app.get('/about', (request, response) => {
   response.render('about');
 });
+
+app.get('/statistic', (request, response) => {
+  response.render('statistic');
+})
 
 // Private key, in `.json` format, for an Earth Engine service account.
 const PRIVATE_KEY = require('./privatekey.json');
