@@ -255,3 +255,13 @@ hr.style14 {
 }
 
 
+.txt {
+    line-height: 1.4rem;
+    text-align: justify;
+    font-size: 1.1rem;
+}
+
+#logoBig {
+    width: 100%;
+    height: auto;
+}

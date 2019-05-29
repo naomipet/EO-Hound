@@ -1,3 +1,97 @@
 {{> header }}
-<h1>Im the about page</h1>
+<div class="containerBox">
+    <div class="row mb-4">
+        <div class="col-8">
+            <h4 class="titleStat">What is EO-Hound?</h4>
+            <p class="txt">
+                <strong>EO-Hound</strong> is a user-friendly web application to query catalogues and generate summary statistics about 
+                satellite imagery availability and quality, bound to an user-selected area of interest.
+            </p>
+            <h4 class="titleStat">Why EO-Hound?</h4>
+            <p class="txt">
+                The availability of open satellite imagery has grown rapidly in the last years, and so are the number of
+                studies and applications employing thereof for different purposes. Nevertheless, choosing suitable dataset
+                for a remote sensing project often results in a tedious and time-consuming operation. In view of the above,
+                having access to complete and user-friendly tools -dedicated to data overview as well as metadata
+                harvesting- is key to facilitate this task. Emerging technologies -such as the distributed computing- pose a
+                terrific opportunity for tackling any satellite data planning issue. Among the cutting-edge solutions, the
+                Google Earth Engine (GEE) represents a reference in terms of capabilities and usability for satellite imagery
+                operations. GEE is a cloud-based geospatial processing platform that provides catalogues of open satellite
+                imagery, and a set of algorithms that can be used directly on these data. 
+            </br>
+            </br>
+                Until now <strong>two different dataset</strong> are queries:
+                <ul>
+                    <li><strong>Sentinel-2</strong></li>
+                    <li><strong>Landsat8</strong></li>
+                </ul>
+            </p>
+
+        </div>
+        <div class="col-4">
+            <h4 class="titleStat text-center">Our Logo</h4>
+            <img id="logoBig" src="/static/Logo.png" alt="">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <h4 class="titleStat">Let's Start Exploring the Catalogues!</h4>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-4">
+            <img id="logoBig" src="/static/Logo.png" alt="">
+        </div>
+        <div class="col-8">
+
+            <ol type="1">
+                <li><strong>Choose collection:</strong>
+                    <br>
+                    Landsat8, Sentinel-2 level 1C and Sentinel-2 level 2A are the available collections
+                </li>
+                <li><strong>Insert Sensing Period:</strong>
+                    <br>
+                    Filtering the image collection by selecting the start and end date
+                </li>
+                <li><strong>Import Area of interest:</strong>  
+                    <br>
+                    This Bounding Box can be of any shape but it must not overcome 100kmq.
+                    <br> 
+                    The only reference system allowed is WGS84.
+                </li>
+                <li><strong>Load the satellite image:</strong>  
+                    <br>
+                    If tick it will render it on the map. 
+                </li>
+                <li><strong>Cloud Filter:</strong>  
+                    <br>
+                    Sort by a cloud cover property. Admissible values from 0 to 100. O refers to image without
+                    any cloud, whereas 100 takes all the images in the collection. 
+                </li>
+                <li><strong>Run:</strong>  
+                    <br>
+                    Start the query!
+                </li>
+            </ol>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <h4 class="titleStat">Results</h4> 
+        </div>
+    </div>   
+    <div class="row">
+        <div class="col-4">
+            <img id="logoBig" src="/static/Logo.png" alt="">
+        </div> 
+        <div class="col-8">
+            <ol type="1">
+                <li>Selection of a specific tile/granule to display its metadata and statistical information.
+                    The amount of surface overlapped to the area of ​​interest is shown in percentage.
+                </li>
+            </ol>  
+        </div>
+    </div>
+</div>
+
 {{> footer }}
