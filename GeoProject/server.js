@@ -15,10 +15,10 @@ var bodyParser = require('body-parser');
 const app = express();
 
 
-app.engine ('hbs', handlebars( { 
-  extname: 'hbs', 
+app.engine ('hbs', handlebars( {
+  extname: 'hbs',
   // defaultLayout: 'main',
-  defaultView: 'default', 
+  defaultView: 'default',
   layoutsDir: __dirname + '/views/',
   partialsDir: __dirname + '/views/partials/'
 } ) );
@@ -49,6 +49,10 @@ app.get('/filter', (request, response) => {
   var cloudDescriptor = params.cloudDescriptor
   dateStart = request.query.dateStart;
   dateEnd = request.query.dateEnd;
+  var loadImage = false
+  if(request.query.showImage == 'true'){
+    loadImage = true
+  }
   // jsonBbox = request.body.jsonBbox;
   cloudFilter = Number(request.query.cloudFilter);
   var coord = request.query.coordinates.split(",")
@@ -73,42 +77,29 @@ app.get('/filter', (request, response) => {
       response.send(output);
     }
     else {
-      //collection of images clipped to bbox, for image sample
-      var filteredCollection = collection.filter(ee.Filter.lt(cloudDescriptor, 15))
-                      .map(function(im){return im.clip(bbox)})
-      var footprint, names
-      if(request.query.imageCollection == 'Landsat'){
-      //feature collection of all granules partially covering the bbox
-        footprint = ee.FeatureCollection('users/naomipet/landsat_descending').filterBounds(bbox)
-        names = footprint.aggregate_array('WRSPR')
-      }
-      else{
-        footprint = ee.FeatureCollection('users/naomipet/sentinel2_tiles_world').filterBounds(bbox)
-        names = footprint.aggregate_array('Name')
-      }
-
-      var bboxArea = bbox.geometry().area().divide(100 * 100).getInfo()
-      //get a new feature collection, that is sentinelFootprint with a new property- precentage of area that is covered by bbox
-      var covarage = GetCoverage(footprint, bbox, bboxArea)
-
-
-      //calc statistics
-      var clouds = collection.aggregate_array(cloudDescriptor)
-      // // Get the date range of images in the collection.
+      var bboxArea = bbox.geometry().area().getInfo()
+      var footprintData = GetFootpringData(request.query.imageCollection, bbox, bboxArea)
+      //calc statistics on images
+      var cloudsAvg = GetCloudAvg(collection, cloudDescriptor)
+      // Get the date range of images in the collection.
       var range = collection.reduceColumns(ee.Reducer.minMax(), ["system:time_start"])
       var minDate = ee.Date(range.get('min'))
       var maxDate = ee.Date(range.get('max'))
-      //
-      // //output data
-
-      AddFieldToJson(output, 'clouds', clouds.getInfo())
+      //output data
+      AddFieldToJson(output, 'cloudsAvg', cloudsAvg.getInfo().toFixed(2))
       AddFieldToJson(output, 'minDate', minDate.format('d-M-Y').getInfo())
       AddFieldToJson(output, 'maxDate', maxDate.format('d-M-Y').getInfo())
-      AddFieldToJson(output, 'granules', covarage.getInfo())
-      AddFieldToJson(output, 'names', names.getInfo())
+      AddFieldToJson(output, 'granulesDescending', footprintData.covarageDescending)
+      AddFieldToJson(output, 'granulesAscending', footprintData.covarageAscending)
+      AddFieldToJson(output, 'names', footprintData.names)
+      AddFieldToJson(output, 'aream2', bboxArea.toFixed(2))
 
       var mapid1 =[]
       var token1 =[]
+      if(loadImage == true){
+      //collection of images clipped to bbox, for image sample
+      var filteredCollection = collection.filter(ee.Filter.lt(cloudDescriptor, 15))
+                      .map(function(im){return im.clip(bbox)})
       //get maps tokens and respond
       var rgbVis = {
         min: 0.0,
@@ -123,12 +114,15 @@ app.get('/filter', (request, response) => {
         response.send(output);
       })
     }
+    else {
+      response.send(output);
+    }
+    }
 
 })
 
 app.get('/granule', (request, response) => {
   //parse inputs
-  var output = {} // empty Object
 
   var granuleName = request.query.name
   var params = GetCollectionParams(request.query.imageCollection)
@@ -147,8 +141,11 @@ app.get('/granule', (request, response) => {
   else {
     granuleImages = ee.ImageCollection(collectionSource).filterMetadata('MGRS_TILE', 'equals', granuleName).filterDate(start,finish).filter(ee.Filter.lt(cloudDescriptor, maxCloud))
   }
+  var orbitDirection = granuleImages.first().get('SENSING_ORBIT_DIRECTION')
   var count = granuleImages.size();
   var clouds = granuleImages.aggregate_array(cloudDescriptor)
+  var cloudsAvg = GetCloudAvg(granuleImages, cloudDescriptor)
+
   // Get the date range of images in the collection.
   var range = granuleImages.reduceColumns(ee.Reducer.minMax(), ["system:time_start"])
   var minDate = ee.Date(range.get('min'))
@@ -156,17 +153,14 @@ app.get('/granule', (request, response) => {
   var dates = GetImageDates(granuleImages);
   var diffs = GetDayDif(dates);
   var revisitTime = diffs.reduce(ee.Reducer.mean()).getInfo().toFixed(2);
+  var histLists = GetHistogramLists(dates.getInfo(), clouds.getInfo());
+  var labels = histLists.labels
+  var data = histLists.data
+  var numOfImages = histLists.numOfImages
 
-  //output data
-   var output = {} // empty Object
-   AddFieldToJson(output, 'granuleName', granuleName)
-  AddFieldToJson(output, 'count', count.getInfo())
-  AddFieldToJson(output, 'clouds', clouds.getInfo())
-  AddFieldToJson(output, 'minDate', minDate.format('d-M-Y').getInfo())
-  AddFieldToJson(output, 'maxDate', maxDate.format('d-M-Y').getInfo())
-  AddFieldToJson(output, 'revisitTime', revisitTime)
-  response.send(output);
- 
+
+
+  response.render('statistic', {name: granuleName, orbitDirection: orbitDirection.getInfo(), start: minDate.format('d-M-Y').getInfo(), end: maxDate.format('d-M-Y').getInfo(), numOfImages: count.getInfo(), areaCov: 111, avgCloud: cloudsAvg.getInfo().toFixed(2), revisitTime: revisitTime, data: data, labels: labels, numOfImages: numOfImages});
 })
 
 app.get('/about', (request, response) => {
@@ -189,17 +183,42 @@ ee.data.authenticateViaPrivateKey(PRIVATE_KEY, () => {
 });
 
 //utils
+
+GetFootpringData = function(collectionName, bbox, bboxArea){
+  var footprint, names
+  var covarageDescending ={}
+  var  covarageAscending = {}
+  if(collectionName == 'Landsat'){
+  //feature collection of all granules partially covering the bbox
+    footprint = ee.FeatureCollection('users/naomipet/landsat_descending').filterBounds(bbox)
+    covarageDescending = GetCoverage(footprint, bbox, bboxArea).getInfo()
+    names = footprint.aggregate_array('WRSPR').getInfo()
+    footprint = ee.FeatureCollection('users/naomipet/landsat_ascending').filterBounds(bbox)
+    covarageAscending =(GetCoverage(footprint, bbox, bboxArea).getInfo())
+    names +=(","+footprint.aggregate_array('WRSPR').getInfo())
+  }
+  else{
+    footprint = ee.FeatureCollection('users/naomipet/sentinel2_tiles_world').filterBounds(bbox)
+    names = footprint.aggregate_array('Name').getInfo()
+    covarageDescending = GetCoverage(footprint, bbox, bboxArea).getInfo()
+  }
+  return {
+      names: names,
+      covarageDescending: covarageDescending,
+      covarageAscending: covarageAscending
+  };
+}
+
 GetCoverage = function(geomeries, bbox, bboxArea) {
   /*gets the coverage precentage of a bbox in a feature*/
   return ee.FeatureCollection(geomeries.map(function(feature) {
     var inter = feature.intersection(bbox.geometry())
     var featureInt = ee.Feature(inter)
-    return feature.set({areaHa: featureInt.geometry().area().divide(100).divide(bboxArea)})
+    return feature.set({areaPrecent: featureInt.geometry().area().divide(bboxArea).multiply(100)})
   }))
 }
 
 GetDayDif = function(dateList) {
-  var li= ee.List([])
   var lastDayIndex = dateList.size().add(-1)
   var difList = ee.List.sequence(0, lastDayIndex).map(function(n){
     var e = ee.Number(n).add(-1)
@@ -209,6 +228,15 @@ GetDayDif = function(dateList) {
   })
   return RemoveZerosFromList(difList)
 }
+
+GetCloudAvg = function(collection, cloudDescriptor){
+  var cloudStats = collection.reduceColumns({
+        reducer: ee.Reducer.mean(),
+        selectors: [cloudDescriptor],
+      })
+  return cloudStats.get('mean');
+}
+
 
 RemoveZerosFromList = function(list){
   var mappingFunc = function(item, newlist) {
@@ -244,26 +272,66 @@ GetCollectionParams = function(name){
   };
 }
 
-GetFootprint = function(name){
-  switch(name) {
-    case 'Landsat': //not operational!
-      footprint = ee.FeatureCollection('users/naomipet/landsat_descending').filterBounds(bbox)
-      break
-    case 'Sentinel2A':
-      footprint = ee.FeatureCollection('users/naomipet/sentinel2_tiles_world').filterBounds(bbox)
-      break
-    default:
-      footprint = ee.FeatureCollection('users/naomipet/sentinel2_tiles_world').filterBounds(bbox)
-  }
-  return {
-      footprint: footprint,
-  };
-}
-
-
 
 
 AddFieldToJson = function(base, key, value){
   base[key] = []; // empty Array, which you can push() values into
   base[key]=value;
+}
+
+GetHistogramLists = function(dates, clouds){
+  //var datesStrList = dates.split(',')
+  //var cloudsStrList = clouds.split(',')
+  var datesList = dates.map(date => new Date(date))
+  var cloudList = clouds.map(cloud => parseFloat(cloud))
+
+  var firstYear = datesList[0].getYear();
+  var lastYear = datesList[datesList.length-1].getYear();
+  var years = lastYear - firstYear + 1;
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  var labels = []
+  var data = []
+  var numOfImages = []
+  if(years == 1){
+    var firstMonth = datesList[0].getMonth();
+    var lastMonth = datesList[datesList.length-1].getMonth()
+    var months = lastMonth - firstMonth + 1;
+    for(var i = 0; i < months; i++){
+      var month = firstMonth + i;
+      labels[i] = monthNames[month]
+      var avg = 0;
+      var count = 0;
+      numOfImages[i] = 0;
+      for(j = 0; j < cloudList.length; j++){
+        if(datesList[j].getMonth() == month){
+          avg += cloudList[j]
+          numOfImages[i]++;
+          count ++;
+        }
+      }
+      data[i] = avg/count;
+    }
+  }
+  else {
+    for(var i = 0; i < years; i++){
+      var year = firstYear + i
+      labels[i] = year;
+      var avg = 0;
+      var count = 0;
+      numOfImages[i] = 0;
+      for(j = 0; j < cloudsStrList.length; j++){
+        if(datesList[j].getYear() == year){
+          avg += cloudList[j]
+          numOfImages[i]++;
+          count ++;
+        }
+      }
+      data[i] = avg/count;
+    }
+  }
+  return {
+      labels: labels,
+      data: data,
+      numOfImages: numOfImages
+  };
 }

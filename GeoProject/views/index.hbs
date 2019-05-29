@@ -35,8 +35,8 @@
                 <input class="form-control" type="file" name="jsonBbox" id="bbox" placeholder="GeoJson" accept=".geojson">
             </div>
            <div class="form-check checkboxPosition">
-              <input type="checkbox" class="form-check-input" id="loadImage">
-              <label class="form-check-label marginSet" for="loadImage">Load Image Collection</label>
+              <input type="checkbox" name="showImage" class="form-check-input" id="loadImage" checked="checked" value="true"/>
+              <label class="form-check-label marginSet" for="loadImage">Load Image Sample</label>
             </div>
             <div class="form-group">
               <input class="form-control" type="text" name="coordinates" id="geometry">
@@ -64,9 +64,9 @@
               Choose Granule
             </button>
             <div id="granuleName" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          
+
             </div>
-          </div>  
+          </div>
         <h3 id="formTitleStat">General Statistics</h3>
       </div>
     </div>
@@ -80,7 +80,7 @@
             </div>
             <div class="col-8">
                <div id="imageNumber" class="resultSquareSmall">
-                <p>510</p>
+                <p></p>
               </div>
             </div>
           </div>
@@ -90,7 +90,7 @@
           </div>
         </div>
         </div>
-        
+
         {{!-- clouds --}}
         <div id="cloud" class="squareSmall">
           <div class="row">
@@ -98,8 +98,8 @@
               <i class="fas fa-cloud iconSmall"></i>
             </div>
             <div class="col-8">
-              <div class="resultSquareSmall">
-                <p>50%</p>
+              <div id="avgCloud" class="resultSquareSmall">
+                <p></p>
               </div>
             </div>
           </div>
@@ -109,7 +109,7 @@
             </div>
           </div>
         </div>
-        
+
       </div>
       <div class="col-6">
          {{!-- Area of Interest --}}
@@ -119,8 +119,8 @@
               <i class="fas fa-draw-polygon iconSmall"></i>
             </div>
             <div class="col-8">
-              <div class="resultSquareSmall">
-               <p>100,50 kmq</p>
+              <div id="area" class="resultSquareSmall">
+               <p></p>
                </div>
             </div>
           </div>
@@ -137,8 +137,8 @@
                <i class="fab fa-buffer iconSmall"></i>
             </div>
             <div class="col-8">
-              <div class="resultSquareSmall">
-                <p>5 Day</p>
+              <div id="numOfGranules" class="resultSquareSmall">
+                <p></p>
               </div>
             </div>
           </div>
@@ -151,7 +151,7 @@
       </div>
     </div>
   </div>
-   
+
 
 
   <!-- The element into which we render the Google Map. -->
@@ -170,24 +170,6 @@
 
   <!-- Create a callback to boot our application. -->
   <script>
-
-
-    // This function will run after the Google Maps API has finished leading,
-    // as specified by the &callback=initMap parameter in the Maps API script
-    // URL (below).
-    // $('#myForm').on('submit', function() { // Fired listener when submit button is clicked.
-    //   $.ajax({
-    //     url: '/filter',
-    //     dataType : 'json', // Try text also, maybe the api donn't send result in json. Text always work.
-    //     data: $('#myForm').serialize(), // The form to send.
-    //     success : function (response) {// Get response on successful sever connection.
-    //       var data = response['dataStart']; // or alert
-    //     }, error: function (err) { // Get error on failed connection to server.
-    //       console.log(err); // or alert
-    //     }
-    //   })
-    // });
- //DOM container form and staistic
   var divClose = document.getElementById("form");
   var divOpen = document.getElementById("formClose");
   var icnLoad = document.getElementsByClassName("fa-spinner");
@@ -210,53 +192,72 @@
       $(icnLoad).show();
     })
 
-
+    var params = ''
     document.forms['myForm'].addEventListener('submit', (event) => {
     event.preventDefault();
+    clearImageSample()
+    ClearGranules()
     $.ajax({
         url: '/filter',
         dataType : 'json', // Try text also, maybe the api donn't send result in json. Text always work.
         data: $('#myForm').serialize(), // The form to send.
         success : function (response) {// Get response on successful sever connection.
-          var granules = response['granules']
-          var images = response['images']
-          var areas = granules.features.map(function(d) { return d.properties.areaHa})
-          var names = JSON.stringify(response['names']).replace(/"/g, '').replace(/\[|\]/g, '')
-          names = names.split(',')
-          var clouds = JSON.stringify(response['clouds'])
-          var minDate = JSON.stringify(response['minDate'])
-          var maxDate = JSON.stringify(response['maxDate'])
-          ids = JSON.stringify(response['mapid'])
-          tokens = JSON.stringify(response['token'])
-          addLayers(ids, tokens)
-          loadGeoJson(granules)
-          var params = $('#myForm').serialize()
+          var granulesDescending = response['granulesDescending']
+          var granulesAscending = response['granulesAscending']
+          var count = response['count']
+          if(count == '0')
+          {
+            alert("no images for the specified query")
+          }
+          else{
+            var areas = granulesDescending.features.map(function(d) { return d.properties.areaPrecent})
+            if(!isEmpty(granulesAscending)){
+              areas.concat(granulesAscending.features.map(function(d) { return d.properties.areaPrecent}))
+            }
+            var areaKm2 = parseFloat(response['aream2'])/1000000
+            areaKm2 = areaKm2.toExponential(2)
+            var names = JSON.stringify(response['names']).replace(/"/g, '').replace(/\[|\]/g, '').split(',')
+            var cloudsAvg = JSON.stringify(response['cloudsAvg']).replace(/"/g, '')
+            var minDate = JSON.stringify(response['minDate'])
+            var maxDate = JSON.stringify(response['maxDate'])
+            if(response['mapid'] != undefined){
+              ids = JSON.stringify(response['mapid'])
+              tokens = JSON.stringify(response['token'])
+              addLayers(ids, tokens)
+            }
+            addGranulesToMap(granulesAscending)
+            addGranulesToMap(granulesDescending)
+            params = $('#myForm').serialize()
 
-          //hide load symbol 
+            //show general statistic
+            $(divStatistic).show()
+            $("#granuleName").html("")
+            names.forEach(function(element) {
+              var txt="<a class='dropdown-item' onclick=openGranuleStat('"+element+"')>" + element + "</a>"
+              $("#granuleName").append(txt)
+            })
+            $("#imageNumber").html("<p>" + count + "</p>")
+            $("#avgCloud").html("<p>" + cloudsAvg + "%</p>")
+            $("#numOfGranules").html("<p>" + names.length + "</p>")
+            $("#area").html("<p>" + areaKm2 + "km<sup>2</sup></p>")
+          }
           $(icnLoad).hide()
-          //show general statistic
-          $(divStatistic).show()
-         
-          names.forEach(function(element) {
-            
-          $("#granuleName").append("<a class='dropdown-item' href='#'>" + element + "</a>")
-          })
-          //$("#imageNumber").append("<p>" + images + "</p>")
+          }, error: function (err) { // Get error on failed connection to server.
+            $(icnLoad).hide()
+            alert("server error")
+          }
 
-          
-           
-          window.open("/granule?name=" + names[0] + "&" + params);
-        }, error: function (err) { // Get error on failed connection to server.
-          console.log(err); // or alert
-        }
-       
-   
+
       })
 
   });
   document.getElementById('bbox').onchange = function(e) {
     readFile(e.srcElement.files[0]);
   };
+
+  function openGranuleStat(name){
+    window.open("/granule?name=" + name + "&" + params);
+  }
 
   function readFile(file) {
     var reader = new FileReader();
@@ -269,7 +270,7 @@
     reader.readAsText(file);
   }
 
- 
+
 
   var initMap = function() {
     // The values of mapid and token for the map tiles, generated by Earth

@@ -41,9 +41,12 @@ const initialize = () => {
   map.mapTypes.set('OpenStreetMap', osmMapType);
   map.setMapTypeId('OpenStreetMap');
 
+  var worldBounds = new google.maps.LatLngBounds(new google.maps.LatLng(-50,-90),
+                                               new google.maps.LatLng(70,90));
+  map.fitBounds(worldBounds);
+
   // Add the layers to the map.
   map.overlayMapTypes.setAt(0, osmMapType)
-  map.overlayMapTypes.push(null);        // Placeholder for ee
   map.overlayMapTypes.push(null);        // Placeholder for ee
 
   //form and general statistic
@@ -57,6 +60,10 @@ const initialize = () => {
   map.controls[google.maps.ControlPosition.RIGHT_TOP].push(statisticDiv);
 
 };
+
+var clearImageSample = function(){
+  map.overlayMapTypes.setAt(1, null)
+}
 
 var addLayers = function(mapId, token){
   mapId = mapId.replace(/"/g, '').replace(/\[|\]/g, '')
@@ -90,13 +97,10 @@ var addLayers = function(mapId, token){
 }
 
 function loadGeoJsonString(geoString) {
-  map.data.forEach(function(feature) {
-    // filter...
-    map.data.remove(feature);
-  });
+  ClearAllFeatures()
   // Define the LatLng coordinates for another inner path.
   var geojson = JSON.parse(geoString);
-  map.data.addGeoJson(geojson)
+  map.data.addGeoJson(geojson, { idPropertyName: 'bbox' })
   map.data.setStyle({
     fillColor: 'transparent',
     strokeWeight: 2
@@ -124,15 +128,30 @@ function loadGeoJsonString(geoString) {
   return geojson;
 }
 
-function loadGeoJson(geojson, highligtedFeature) {
-  // Define the LatLng coordinates for another inner path.
+function ClearAllFeatures(){
   map.data.forEach(function(feature) {
-    // filter...
     map.data.remove(feature);
   });
+}
+
+function ClearGranules(){
+  map.data.forEach(function(feature) {
+    var id = feature.getId()
+    if(id != 'bbox'){
+      map.data.remove(feature);
+  };
+})
+}
+
+function addGranulesToMap(geojson, highligtedFeature) {
+
+  if(!isEmpty(geojson)){
   map.data.addGeoJson(geojson)
   setFeatureStyle(highligtedFeature)
+  }
 }
+
+
 
 function setFeatureStyle(highligtedFeature){
     map.data.setStyle(function(feature) {
@@ -149,4 +168,13 @@ function setFeatureStyle(highligtedFeature){
       strokeWeight: strokeWeight
     }
   });
+}
+
+function isEmpty(obj) {
+    for(var prop in obj) {
+        if(obj.hasOwnProperty(prop))
+            return false;
+    }
+
+    return true;
 }
