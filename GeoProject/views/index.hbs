@@ -211,7 +211,7 @@
             alert("no images for the specified query")
           }
           else{
-            var areas = granulesDescending.features.map(function(d) { return d.properties.areaPrecent})
+            var areas = granulesDescending.features.map(function(d) { return d.properties.areaPrecent.toFixed(2)})
             if(!isEmpty(granulesAscending)){
               areas.concat(granulesAscending.features.map(function(d) { return d.properties.areaPrecent}))
             }
@@ -234,8 +234,8 @@
             $(divStatistic).show()
             //push values in the statistic
             $("#granuleName").html("")
-            names.forEach(function(element) {
-              var txt="<a class='dropdown-item' onclick=openGranuleStat('"+element+"') onmouseover=highlightGranule('"+element+"')>" + element + "</a>"
+            names.forEach(function(element, index) {
+              var txt="<a class='dropdown-item' onclick=openGranuleStat('"+element+"') onmouseover=highlightGranule('"+element+"')>" + element + ": covering "+ areas[index]+"% of bbox</a>"
               $("#granuleName").append(txt)
             })
             $("#imageNumber").html("<p>" + count + "</p>")
