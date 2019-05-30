@@ -4,22 +4,16 @@
     <div class="row">
         <div class="col-8">
             <h4 class="titleStat">Statistics for Granule <strong>{{name}}</strong></h4>
-            {{!-- - Dates: <span>{{start}}</span> to <span>{{end}}</span> --}}
         </div>
         <div class="col-4">
             <button id="buttonColor" class="btn btn-lg btn-primary buttonPosition">Download Metadata</button>
         </div>
     </div>
-    {{!-- <div class="row">
-        <div class="col-8">
-            <h4 class="titleStat">Orbit Direction: <strong>{{orbitDirection}}</strong></h4>
-        </div>
-    </div> --}}
     <div class="row">
         <div class="col-3">
              {{!-- Number of Images --}}
             <div id="images" class="square">
-                <div class="row">
+                <div class="row rowDimension">
                     <div class="col-4">
                         <i class="fas fa-camera-retro iconBig"></i>
                     </div>
@@ -39,7 +33,7 @@
         <div class="col-3">
              {{!-- Orbit Direction --}}
             <div id="areaOfInt" class="square">
-                <div class="row">
+                <div class="row rowDimension">
                     <div class="col-4">
                         <i class="fas fa-draw-polygon iconBig"></i>
                     </div>
@@ -59,14 +53,16 @@
         <div class="col-3">
             {{!-- Available Dates --}}
             <div id="cloud" class="square">
-                <div class="row">
+                <div class="row rowDimension">
                     <div class="col-4">
                         <i class="fas fa-cloud iconBig"></i>
                     </div>
                     <div class="col-8">
                         <div class="resultSquare">
-                            <p>From: {{start}}</p>
-                            <p>To: {{end}}</p>
+                            <p>From: {{start}}
+                            <br>
+                            To: {{end}}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -80,7 +76,7 @@
         <div class="col-3">
              {{!-- Revisiting Time --}}
             <div id="revTime" class="square">
-                <div class="row">
+                <div class="row rowDimension">
                     <div class="col-4">
                         <i class="fas fa-satellite iconBig"></i>
                     </div>
@@ -98,20 +94,29 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row my-4">
         <div class="col-12">
             <h4 class="titleStat">Clouds Coverage</h4>
             <div id="containerChart">
-                <canvas id="myChart"></canvas>
+                <canvas id="CloudChart"></canvas>
+        </div>
+    </div>
+</div>
+  <div class="row">
+        <div class="col-12">
+            <h4 class="titleStat">Number of Images</h4>
+            <div id="containerChart">
+                <canvas id="ImageChart"></canvas>
         </div>
     </div>
 </div>
 
+
     <script>
 
-    var ctx = document.getElementById('myChart').getContext('2d');
+    var ctx = document.getElementById('CloudChart').getContext('2d');
     var labelsStr = '{{labels}}'
-    var dataStr = '{{data}}'
+    var dataStr = '{{dataCloud}}'
     var labels = labelsStr.split(',')
     var data = dataStr.split(',')
     var chart = new Chart(ctx, {
@@ -123,9 +128,34 @@
         labels: labels,
         datasets: [{
             label: 'Cloud Coverage',
-            backgroundColor: 'rgba(47,91,183,0.3)',
-            borderColor: 'rgb(47, 91, 183)',
+            backgroundColor: 'rgba(244,160,0,0.3)',
+            borderColor: 'rgb(244, 160, 0)',
             data: data
+        }]
+    },
+    // Configuration options go here
+    options: {
+        maintainAspectRatio: false
+    }
+});
+
+    var imgChart = document.getElementById('ImageChart').getContext('2d');
+    var labelsStrCount = '{{labels}}'
+    var dataStrCount = '{{dataCount}}'
+    var labelsCount = labelsStrCount.split(',')
+    var dataCountPlot = dataStrCount.split(',')
+    var chart = new Chart(imgChart, {
+    // The type of chart we want to create
+    type: 'bar',
+
+    // The data for our dataset
+    data: {
+        labels: labelsCount,
+        datasets: [{
+            label: 'Number of Image in time',
+            backgroundColor: 'rgba(219,68,55,0.3)',
+            borderColor: 'rgb(219, 68, 55)',
+            data: dataCountPlot
         }]
     },
     // Configuration options go here

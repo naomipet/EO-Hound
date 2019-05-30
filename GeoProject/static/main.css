@@ -4,6 +4,7 @@ html, body {
     height: 100%;
     width: 100%;
     font-family: 'Open Sans', sans-serif;
+    min-width: 1200px;
 }
 
 .bg-steel {
@@ -251,7 +252,7 @@ hr.style14 {
 
 
 .txt {
-    line-height: 1.4rem;
+    line-height: 1.5rem;
     text-align: justify;
     font-size: 1.1rem;
 }
