@@ -4,22 +4,16 @@
     <div class="row">
         <div class="col-8">
             <h4 class="titleStat">Statistics for Granule <strong>{{name}}</strong></h4>
-            {{!-- - Dates: <span>{{start}}</span> to <span>{{end}}</span> --}}
         </div>
         <div class="col-4">
             <button id="buttonColor" class="btn btn-lg btn-primary buttonPosition">Download Metadata</button>
         </div>
     </div>
-    {{!-- <div class="row">
-        <div class="col-8">
-            <h4 class="titleStat">Orbit Direction: <strong>{{orbitDirection}}</strong></h4>
-        </div>
-    </div> --}}
     <div class="row">
         <div class="col-3">
              {{!-- Number of Images --}}
             <div id="images" class="square">
-                <div class="row">
+                <div class="row rowDimension">
                     <div class="col-4">
                         <i class="fas fa-camera-retro iconBig"></i>
                     </div>
@@ -39,7 +33,7 @@
         <div class="col-3">
              {{!-- Orbit Direction --}}
             <div id="areaOfInt" class="square">
-                <div class="row">
+                <div class="row rowDimension">
                     <div class="col-4">
                         <i class="fas fa-draw-polygon iconBig"></i>
                     </div>
@@ -59,14 +53,16 @@
         <div class="col-3">
             {{!-- Available Dates --}}
             <div id="cloud" class="square">
-                <div class="row">
+                <div class="row rowDimension">
                     <div class="col-4">
                         <i class="fas fa-cloud iconBig"></i>
                     </div>
                     <div class="col-8">
                         <div class="resultSquare">
-                            <p>From: {{start}}</p>
-                            <p>To: {{end}}</p>
+                            <p>From: {{start}}
+                            <br>
+                            To: {{end}}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -80,7 +76,7 @@
         <div class="col-3">
              {{!-- Revisiting Time --}}
             <div id="revTime" class="square">
-                <div class="row">
+                <div class="row rowDimension">
                     <div class="col-4">
                         <i class="fas fa-satellite iconBig"></i>
                     </div>

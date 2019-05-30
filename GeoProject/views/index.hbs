@@ -170,27 +170,27 @@
 
   <!-- Create a callback to boot our application. -->
   <script>
-  var divClose = document.getElementById("form");
-  var divOpen = document.getElementById("formClose");
-  var icnLoad = document.getElementsByClassName("fa-spinner");
-  var divStatistic = document.getElementById("containerStatGen");
+  var divClose = document.getElementById("form")
+  var divOpen = document.getElementById("formClose")
+  var icnLoad = document.getElementsByClassName("fa-spinner")
+  var divStatistic = document.getElementById("containerStatGen")
 
   $(icnLoad).hide()
 
-    $("#closeTab").click(function(){
-      $(divClose).fadeToggle();
-      $(divOpen).fadeToggle();
-    })
+  $("#closeTab").click(function(){
+    $(divClose).fadeToggle()
+    $(divOpen).fadeToggle()
+  })
 
-    $("#openTab").click(function(){
-      $(divOpen).fadeToggle();
-      $(divClose).fadeToggle();
+  $("#openTab").click(function(){
+    $(divOpen).fadeToggle()
+    $(divClose).fadeToggle()
+  })
 
-    })
-
-    $("#buttonColor").click(function(){
-      $(icnLoad).show();
-    })
+  $("#buttonColor").click(function(){
+    //check if the form is filles than show the loader
+    $(icnLoad).show()
+  })
 
     var params = ''
     var granulesAscending, granulesDescending
@@ -232,6 +232,7 @@
 
             //show general statistic
             $(divStatistic).show()
+            //push values in the statistic
             $("#granuleName").html("")
             names.forEach(function(element) {
               var txt="<a class='dropdown-item' onclick=openGranuleStat('"+element+"') onmouseover=highlightGranule('"+element+"')>" + element + "</a>"

@@ -2,10 +2,7 @@
 .containerBox {
     width: 100%;
     padding: 2%;
-    /* padding-right: 15px;
-    padding-left: 15px; */
-    /* margin-right: auto; */
-    /* margin-left: auto; */
+   
 }
 
 .buttonPosition {
@@ -18,6 +15,7 @@
     color: rgb(47, 91, 183);  
 
 }
+
 
 .square {
     min-width: 265px;
@@ -37,6 +35,11 @@
     transform: scale(1.1);
 }
 
+
+.rowDimension {
+    height: 107px;
+}
+
 .iconBig {
     font-size: 70px;
 
@@ -45,12 +48,12 @@
 .resultSquare  {
     padding-left: 5px;
     margin-top: 20px;
-    font-size: 1.5rem
+    font-size: 1.3rem
     
 }
 
 .titleSquare {
-    margin-top: 35px;
+    margin-top: 13px;
     color: #ffffff;
 }
 
