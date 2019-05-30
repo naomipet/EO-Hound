@@ -164,7 +164,7 @@ app.get('/granule', (request, response) => {
 
 
 
-  response.render('statistic', {name: granuleName, orbitDirection: orbitDirection, start: minDate.format('d-M-Y').getInfo(), end: maxDate.format('d-M-Y').getInfo(), numOfImages: count.getInfo(), revisitTime: revisitTime, labels: histLists.labels, data:histLists.data});
+  response.render('statistic', {name: granuleName, orbitDirection: orbitDirection, start: minDate.format('d-M-Y').getInfo(), end: maxDate.format('d-M-Y').getInfo(), numOfImages: count.getInfo(), revisitTime: revisitTime, labels: histLists.labels, dataCloud:histLists.data, dataCount:histLists.numOfImages});
 })
 
 app.get('/about', (request, response) => {
