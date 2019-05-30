@@ -17,6 +17,7 @@ const app = express();
 
 app.engine ('hbs', handlebars( {
   extname: 'hbs',
+  // defaultLayout: 'main',
   defaultView: 'default',
   layoutsDir: __dirname + '/views/',
   partialsDir: __dirname + '/views/partials/'
@@ -44,6 +45,8 @@ app.get('/filter', (request, response) => {
 
 
   var params = GetCollectionParams(request.query.imageCollection)
+  var collectionSource = params.collectionSource
+  var cloudDescriptor = params.cloudDescriptor
   dateStart = request.query.dateStart;
   dateEnd = request.query.dateEnd;
   var loadImage = false
@@ -64,7 +67,7 @@ app.get('/filter', (request, response) => {
     var poly = ee.Geometry.Polygon(geo)
     var bbox = ee.FeatureCollection(poly)
     //collection of images including all granules related to bbox, for statistics
-    var collection = ee.ImageCollection(params.collectionSource).filterBounds(bbox).filterDate(dateStart,dateEnd).filter(ee.Filter.lt(params.cloudDescriptor, cloudFilter))
+    var collection = ee.ImageCollection(collectionSource).filterBounds(bbox).filterDate(dateStart,dateEnd).filter(ee.Filter.lt(cloudDescriptor, cloudFilter))
     //var collection = ee.ImageCollection(collectionSource).filterBounds(bbox).filterDate(dateStart,dateEnd).filter(ee.Filter.lt('cloudDescriptor', cloudFilter))
     var count = collection.size().getInfo()
     var output = {} // empty Object
@@ -75,9 +78,9 @@ app.get('/filter', (request, response) => {
     }
     else {
       var bboxArea = bbox.geometry().area().getInfo()
-      var footprintData = GetFootpringData(request.query.imageCollection, bbox, bboxArea, params.nameDescriptor)
+      var footprintData = GetFootpringData(request.query.imageCollection, bbox, bboxArea)
       //calc statistics on images
-      var cloudsAvg = GetCloudAvg(collection, params.cloudDescriptor)
+      var cloudsAvg = GetCloudAvg(collection, cloudDescriptor)
       // Get the date range of images in the collection.
       var range = collection.reduceColumns(ee.Reducer.minMax(), ["system:time_start"])
       var minDate = ee.Date(range.get('min'))
@@ -95,7 +98,7 @@ app.get('/filter', (request, response) => {
       var token1 =[]
       if(loadImage == true){
       //collection of images clipped to bbox, for image sample
-      var filteredCollection = collection.filter(ee.Filter.lt(params.cloudDescriptor, 15))
+      var filteredCollection = collection.filter(ee.Filter.lt(cloudDescriptor, 15))
                       .map(function(im){return im.clip(bbox)})
       //get maps tokens and respond
       var rgbVis = {
@@ -123,31 +126,25 @@ app.get('/granule', (request, response) => {
 
   var granuleName = request.query.name
   var params = GetCollectionParams(request.query.imageCollection)
+  var collectionSource = params.collectionSource
+  var cloudDescriptor = params.cloudDescriptor
   var maxCloud = parseInt(request.query.cloudFilter)
   var start = ee.Date(request.query.dateStart)
   var finish = ee.Date(request.query.dateEnd)
   //collection of images including all granules related to bbox, for statistics
-  var granuleImages, orbitDirection
+  var granuleImages
   if(request.query.imageCollection == 'Landsat'){
     var path = Number(granuleName.slice(0, 3));
     var row = Number(granuleName.slice(3, 6));
-    granuleImages = ee.ImageCollection(params.collectionSource).filter(ee.Filter.eq('WRS_PATH', path)).filter(ee.Filter.eq('WRS_ROW', row)).filterDate(start,finish).filter(ee.Filter.lt(params.cloudDescriptor, maxCloud))
-    // orbitDirection = granuleImages.first().get(params.orbitDirDescriptor).getInfo()
-    // if(orbitDirection == 'D'){
-    //   orbitDirection = 'DESCENDING'
-    // }
-    // else{
-    //   orbitDirection = 'ASCENDING'
-    // }
-    orbitDirection = 'DESCENDING'
+    granuleImages = ee.ImageCollection(collectionSource).filter(ee.Filter.eq('WRS_PATH', path)).filter(ee.Filter.eq('WRS_ROW', row)).filterDate(start,finish).filter(ee.Filter.lt(cloudDescriptor, maxCloud))
   }
   else {
-    granuleImages = ee.ImageCollection(params.collectionSource).filterMetadata('MGRS_TILE', 'equals', granuleName).filterDate(start,finish).filter(ee.Filter.lt(params.cloudDescriptor, maxCloud))
-    orbitDirection = granuleImages.first().get(params.orbitDirDescriptor).getInfo()
+    granuleImages = ee.ImageCollection(collectionSource).filterMetadata('MGRS_TILE', 'equals', granuleName).filterDate(start,finish).filter(ee.Filter.lt(cloudDescriptor, maxCloud))
   }
-
+  var orbitDirection = granuleImages.first().get('SENSING_ORBIT_DIRECTION')
   var count = granuleImages.size();
-  var clouds = granuleImages.aggregate_array(params.cloudDescriptor)
+  var clouds = granuleImages.aggregate_array(cloudDescriptor)
+  var cloudsAvg = GetCloudAvg(granuleImages, cloudDescriptor)
 
   // Get the date range of images in the collection.
   var range = granuleImages.reduceColumns(ee.Reducer.minMax(), ["system:time_start"])
@@ -155,22 +152,24 @@ app.get('/granule', (request, response) => {
   var maxDate = ee.Date(range.get('max'))
   var dates = GetImageDates(granuleImages);
   var diffs = GetDayDif(dates);
-  var revisitTime = 0;
-  if(diffs != 0)
-  {
-    revisitTime = diffs.reduce(ee.Reducer.mean()).getInfo().toFixed(2);
-  }
+  var revisitTime = diffs.reduce(ee.Reducer.mean()).getInfo().toFixed(2);
   var histLists = GetHistogramLists(dates.getInfo(), clouds.getInfo());
+  var labels = histLists.labels
+  var data = histLists.data
+  var numOfImages = histLists.numOfImages
 
 
 
-  response.render('statistic', {name: granuleName, orbitDirection: orbitDirection, start: minDate.format('d-M-Y').getInfo(), end: maxDate.format('d-M-Y').getInfo(), numOfImages: count.getInfo(), revisitTime: revisitTime, labels: histLists.labels, data:histLists.data});
+  response.render('statistic', {name: granuleName, orbitDirection: orbitDirection.getInfo(), start: minDate.format('d-M-Y').getInfo(), end: maxDate.format('d-M-Y').getInfo(), numOfImages: count.getInfo(), areaCov: 111, avgCloud: cloudsAvg.getInfo().toFixed(2), revisitTime: revisitTime, data: data, labels: labels, numOfImages: numOfImages});
 })
 
 app.get('/about', (request, response) => {
   response.render('about');
 });
 
+app.get('/statistic', (request, response) => {
+  response.render('statistic');
+})
 
 // Private key, in `.json` format, for an Earth Engine service account.
 const PRIVATE_KEY = require('./privatekey.json');
@@ -185,23 +184,23 @@ ee.data.authenticateViaPrivateKey(PRIVATE_KEY, () => {
 
 //utils
 
-GetFootpringData = function(collectionName, bbox, bboxArea, nameDescriptor){
+GetFootpringData = function(collectionName, bbox, bboxArea){
   var footprint, names
   var covarageDescending ={}
   var  covarageAscending = {}
   if(collectionName == 'Landsat'){
   //feature collection of all granules partially covering the bbox
     footprint = ee.FeatureCollection('users/naomipet/landsat_descending').filterBounds(bbox)
-    covarageDescending = GetCoverage(footprint, bbox, bboxArea, nameDescriptor).getInfo()
-    names = footprint.aggregate_array(nameDescriptor).getInfo()
-    //footprint = ee.FeatureCollection('users/naomipet/landsat_ascending').filterBounds(bbox)
-    //covarageAscending =(GetCoverage(footprint, bbox, bboxArea, nameDescriptor).getInfo())
-    //names +=(","+footprint.aggregate_array(nameDescriptor).getInfo())
+    covarageDescending = GetCoverage(footprint, bbox, bboxArea).getInfo()
+    names = footprint.aggregate_array('WRSPR').getInfo()
+    footprint = ee.FeatureCollection('users/naomipet/landsat_ascending').filterBounds(bbox)
+    covarageAscending =(GetCoverage(footprint, bbox, bboxArea).getInfo())
+    names +=(","+footprint.aggregate_array('WRSPR').getInfo())
   }
   else{
     footprint = ee.FeatureCollection('users/naomipet/sentinel2_tiles_world').filterBounds(bbox)
-    covarageDescending = GetCoverage(footprint, bbox, bboxArea, nameDescriptor).getInfo()
-    names = footprint.aggregate_array(nameDescriptor).getInfo()
+    names = footprint.aggregate_array('Name').getInfo()
+    covarageDescending = GetCoverage(footprint, bbox, bboxArea).getInfo()
   }
   return {
       names: names,
@@ -210,21 +209,16 @@ GetFootpringData = function(collectionName, bbox, bboxArea, nameDescriptor){
   };
 }
 
-GetCoverage = function(geomeries, bbox, bboxArea, nameDescriptor) {
+GetCoverage = function(geomeries, bbox, bboxArea) {
   /*gets the coverage precentage of a bbox in a feature*/
   return ee.FeatureCollection(geomeries.map(function(feature) {
     var inter = feature.intersection(bbox.geometry())
     var featureInt = ee.Feature(inter)
-    var name = feature.get(nameDescriptor)
-    feature = feature.set({appName: name})
     return feature.set({areaPrecent: featureInt.geometry().area().divide(bboxArea).multiply(100)})
   }))
 }
 
 GetDayDif = function(dateList) {
-  if(dateList.size().getInfo() == 1){
-    return 0;
-  }
   var lastDayIndex = dateList.size().add(-1)
   var difList = ee.List.sequence(0, lastDayIndex).map(function(n){
     var e = ee.Number(n).add(-1)
@@ -263,26 +257,18 @@ GetCollectionParams = function(name){
     case 'Landsat': //not operational!
       collectionSource = 'LANDSAT/LC08/C01/T1_SR'
       cloudDescriptor = 'CLOUD_COVER'
-      nameDescriptor = 'WRSPR'
-      orbitDirDescriptor = 'MODE'
       break
     case 'Sentinel2A':
       collectionSource = 'COPERNICUS/S2_SR'
       cloudDescriptor = 'CLOUDY_PIXEL_PERCENTAGE'
-      nameDescriptor = 'Name'
-      orbitDirDescriptor = 'SENSING_ORBIT_DIRECTION'
       break
     default:
       collectionSource = 'COPERNICUS/S2'
       cloudDescriptor = 'CLOUDY_PIXEL_PERCENTAGE'
-      nameDescriptor = 'Name'
-      orbitDirDescriptor = 'SENSING_ORBIT_DIRECTION'
   }
   return {
       collectionSource: collectionSource,
-      cloudDescriptor: cloudDescriptor,
-      nameDescriptor: nameDescriptor,
-      orbitDirDescriptor: orbitDirDescriptor
+      cloudDescriptor: cloudDescriptor
   };
 }
 
