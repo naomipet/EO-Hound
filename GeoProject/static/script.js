@@ -136,8 +136,8 @@ function ClearAllFeatures(){
 
 function ClearGranules(){
   map.data.forEach(function(feature) {
-    var id = feature.getId()
-    if(id != 'bbox'){
+    var name = feature.getProperty('appName')
+    if(name != undefined){
       map.data.remove(feature);
   };
 })
@@ -155,7 +155,7 @@ function addGranulesToMap(geojson, highligtedFeature) {
 
 function setFeatureStyle(highligtedFeature){
     map.data.setStyle(function(feature) {
-    var featureName = feature.getProperty('Name');
+    var featureName = feature.getProperty('appName');
     var color = "gray";
     var strokeWeight = 2;
     if (featureName == highligtedFeature) {

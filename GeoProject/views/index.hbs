@@ -63,7 +63,7 @@
             <button id="buttonColor" class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Choose Granule
             </button>
-            <div id="granuleName" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <div id="granuleName" class="dropdown-menu" aria-labelledby="dropdownMenuButton" onmouseout=highlightGranule()>
 
             </div>
           </div>
@@ -193,6 +193,7 @@
     })
 
     var params = ''
+    var granulesAscending, granulesDescending
     document.forms['myForm'].addEventListener('submit', (event) => {
     event.preventDefault();
     clearImageSample()
@@ -202,8 +203,8 @@
         dataType : 'json', // Try text also, maybe the api donn't send result in json. Text always work.
         data: $('#myForm').serialize(), // The form to send.
         success : function (response) {// Get response on successful sever connection.
-          var granulesDescending = response['granulesDescending']
-          var granulesAscending = response['granulesAscending']
+          granulesDescending = response['granulesDescending']
+          granulesAscending = response['granulesAscending']
           var count = response['count']
           if(count == '0')
           {
@@ -233,7 +234,7 @@
             $(divStatistic).show()
             $("#granuleName").html("")
             names.forEach(function(element) {
-              var txt="<a class='dropdown-item' onclick=openGranuleStat('"+element+"')>" + element + "</a>"
+              var txt="<a class='dropdown-item' onclick=openGranuleStat('"+element+"') onmouseover=highlightGranule('"+element+"')>" + element + "</a>"
               $("#granuleName").append(txt)
             })
             $("#imageNumber").html("<p>" + count + "</p>")
@@ -257,6 +258,13 @@
 
   function openGranuleStat(name){
     window.open("/granule?name=" + name + "&" + params);
+  }
+
+  function highlightGranule(name)
+  {
+    ClearGranules();
+    addGranulesToMap(granulesAscending, name)
+    addGranulesToMap(granulesDescending, name)
   }
 
   function readFile(file) {
