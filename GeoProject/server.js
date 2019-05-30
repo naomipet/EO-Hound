@@ -77,13 +77,13 @@ app.get('/filter', (request, response) => {
       var bboxArea = bbox.geometry().area().getInfo()
       var footprintData = GetFootpringData(request.query.imageCollection, bbox, bboxArea, params.nameDescriptor)
       //calc statistics on images
-      var cloudsAvg = GetCloudAvg(collection, params.cloudDescriptor)
+      var cloudsStat = GetCloudStat(collection, params.cloudDescriptor)
       // Get the date range of images in the collection.
       var range = collection.reduceColumns(ee.Reducer.minMax(), ["system:time_start"])
       var minDate = ee.Date(range.get('min'))
       var maxDate = ee.Date(range.get('max'))
       //output data
-      AddFieldToJson(output, 'cloudsAvg', cloudsAvg.getInfo().toFixed(2))
+      AddFieldToJson(output, 'cloudsAvg', cloudsStat.mean.getInfo().toFixed(2))
       AddFieldToJson(output, 'minDate', minDate.format('d-M-Y').getInfo())
       AddFieldToJson(output, 'maxDate', maxDate.format('d-M-Y').getInfo())
       AddFieldToJson(output, 'granulesDescending', footprintData.covarageDescending)
@@ -95,7 +95,7 @@ app.get('/filter', (request, response) => {
       var token1 =[]
       if(loadImage == true){
       //collection of images clipped to bbox, for image sample
-      var filteredCollection = collection.filter(ee.Filter.lt(params.cloudDescriptor, 15))
+      var filteredCollection = collection.filter(ee.Filter.lt(params.cloudDescriptor, cloudsStat.min.getInfo()+1))
                       .map(function(im){return im.clip(bbox)})
       //get maps tokens and respond
       var rgbVis = {
@@ -235,12 +235,19 @@ GetDayDif = function(dateList) {
   return RemoveZerosFromList(difList)
 }
 
-GetCloudAvg = function(collection, cloudDescriptor){
-  var cloudStats = collection.reduceColumns({
+GetCloudStat = function(collection, cloudDescriptor){
+  var mean = collection.reduceColumns({
         reducer: ee.Reducer.mean(),
         selectors: [cloudDescriptor],
       })
-  return cloudStats.get('mean');
+  var min = collection.reduceColumns({
+        reducer: ee.Reducer.min(),
+        selectors: [cloudDescriptor],
+      })
+  return {
+      mean: mean.get('mean'),
+      min: min.get('min')
+  };
 }
 
 
@@ -329,11 +336,11 @@ GetHistogramLists = function(dates, clouds){
   else {
     for(var i = 0; i < years; i++){
       var year = firstYear + i
-      labels[i] = year;
+      labels[i] = year + 1900;
       var avg = 0;
       var count = 0;
       numOfImages[i] = 0;
-      for(j = 0; j < cloudsStrList.length; j++){
+      for(j = 0; j < cloudList.length; j++){
         if(datesList[j].getYear() == year){
           avg += cloudList[j]
           numOfImages[i]++;
