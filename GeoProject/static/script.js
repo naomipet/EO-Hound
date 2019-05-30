@@ -1,3 +1,5 @@
+
+var bounds;
 /**
  * Initialize the Google Map and add our custom layer overlay.
  * @param  {string} mapId
@@ -48,6 +50,12 @@ const initialize = () => {
   // Add the layers to the map.
   map.overlayMapTypes.setAt(0, osmMapType)
   map.overlayMapTypes.push(null);        // Placeholder for ee
+
+  map.data.addListener('addfeature', function(e) {
+    bounds = new google.maps.LatLngBounds();
+    processPoints(e.feature.getGeometry(), bounds.extend, bounds);
+    map.fitBounds(bounds);
+  });
 
   //form and general statistic
   var formInput = document.getElementById('form');
@@ -100,7 +108,7 @@ function loadGeoJsonString(geoString) {
   ClearAllFeatures()
   // Define the LatLng coordinates for another inner path.
   var geojson = JSON.parse(geoString);
-  map.data.addGeoJson(geojson, { idPropertyName: 'bbox' })
+  map.data.addGeoJson(geojson)
   map.data.setStyle({
     fillColor: 'transparent',
     strokeWeight: 2
@@ -108,24 +116,19 @@ function loadGeoJsonString(geoString) {
   var bounds = new google.maps.LatLngBounds();
 
 
-  for (var i = 0; i < geojson.features.length; i++) {
-    for (var j = 0; j < geojson.features[i].geometry.coordinates.length; j++){
-      geojson.features[i].geometry.coordinates[j].forEach(addBound);
-    }
-  }
-
-
-
-  function addBound(geo){
-    var lat = new google.maps.LatLng(geo[1], geo[0]);
-    bounds.extend(lat);
-  }
-  map.fitBounds(bounds)
-  var zoom = map.getZoom();
-  map.setZoom(zoom-1)
-
-
   return geojson;
+}
+
+function processPoints(geometry, callback, thisArg) {
+  if (geometry instanceof google.maps.LatLng) {
+    callback.call(thisArg, geometry);
+  } else if (geometry instanceof google.maps.Data.Point) {
+    callback.call(thisArg, geometry.get());
+  } else {
+    geometry.getArray().forEach(function(g) {
+      processPoints(g, callback, thisArg);
+    });
+  }
 }
 
 function ClearAllFeatures(){

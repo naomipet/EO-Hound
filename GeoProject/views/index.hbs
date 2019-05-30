@@ -233,6 +233,9 @@
             //show general statistic
             $(divStatistic).show()
             $("#granuleName").html("")
+            $("#imageNumber").html("")
+            $("#avgCloud").html("")
+            $("#numOfGranules").html("")
             names.forEach(function(element, index) {
               var txt="<a class='dropdown-item' onclick=openGranuleStat('"+element+"') onmouseover=highlightGranule('"+element+"')>" + element + ": covering "+ areas[index]+"% of bbox</a>"
               $("#granuleName").append(txt)

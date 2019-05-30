@@ -95,8 +95,7 @@ app.get('/filter', (request, response) => {
       var token1 =[]
       if(loadImage == true){
       //collection of images clipped to bbox, for image sample
-      var filteredCollection = collection.filter(ee.Filter.lt(params.cloudDescriptor, cloudsStat.min.getInfo()+1))
-                      .map(function(im){return im.clip(bbox)})
+        var filteredCollection = collection.map(function(im){return im.clip(bbox)})
       //get maps tokens and respond
       var rgbVis = {
         min: 0.0,
