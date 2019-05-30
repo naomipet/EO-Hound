@@ -3,19 +3,21 @@
 <div class="containerBox">
     <div class="row">
         <div class="col-8">
-            <h4 class="titleStat">Statistics for Granule <strong>{{name}}</strong> - Dates: <span id="dateStart">{{start}}</span> to <span id="dateEnd">{{end}}</span></h4>
+            <h4 class="titleStat">Statistics for Granule <strong>{{name}}</strong></h4>
+            {{!-- - Dates: <span>{{start}}</span> to <span>{{end}}</span> --}}
         </div>
         <div class="col-4">
             <button id="buttonColor" class="btn btn-lg btn-primary buttonPosition">Download Metadata</button>
         </div>
     </div>
-    <div class="row">
+    {{!-- <div class="row">
         <div class="col-8">
             <h4 class="titleStat">Orbit Direction: <strong>{{orbitDirection}}</strong></h4>
         </div>
-    </div>
+    </div> --}}
     <div class="row">
         <div class="col-3">
+             {{!-- Number of Images --}}
             <div id="images" class="square">
                 <div class="row">
                     <div class="col-4">
@@ -34,8 +36,8 @@
                 </div>
                 </div>
             </div>
-
         <div class="col-3">
+             {{!-- Orbit Direction --}}
             <div id="areaOfInt" class="square">
                 <div class="row">
                     <div class="col-4">
@@ -43,18 +45,19 @@
                     </div>
                     <div class="col-8">
                         <div class="resultSquare">
-                            <p>{{areaCov}}</p>
+                            <p>{{orbitDirection}}</p>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <h4 class="titleSquare">Buonding Box Coverage</h4>
+                        <h4 class="titleSquare">Orbit Direction</h4>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-3">
+            {{!-- Available Dates --}}
             <div id="cloud" class="square">
                 <div class="row">
                     <div class="col-4">
@@ -62,18 +65,20 @@
                     </div>
                     <div class="col-8">
                         <div class="resultSquare">
-                            <p>{{avgCloud}}%</p>
+                            <p>From: {{start}}</p>
+                            <p>To: {{end}}</p>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <h4 class="titleSquare">Average Cloud Cover</h4>
+                        <h4 class="titleSquare">Available Dates</h4>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-3">
+             {{!-- Revisiting Time --}}
             <div id="revTime" class="square">
                 <div class="row">
                     <div class="col-4">
@@ -117,7 +122,7 @@
     data: {
         labels: labels,
         datasets: [{
-            label: 'My First dataset',
+            label: 'Cloud Coverage',
             backgroundColor: 'rgba(47,91,183,0.3)',
             borderColor: 'rgb(47, 91, 183)',
             data: data
@@ -136,5 +141,5 @@
   <script src="http://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-datesList
+
 {{> footer }}

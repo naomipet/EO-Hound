@@ -8,7 +8,6 @@ html, body {
 
 .bg-steel {
     background-color: rgb(47, 91, 183);
-    /* height: 60px; */
     width: 100%;
 }
 
@@ -73,7 +72,6 @@ input[type=checkbox] {
     margin-left: 10px;
     float: left;
     border-radius: 5px;
-    /* display: none; */
 }
 
 #formClose {
@@ -149,7 +147,6 @@ hr.style14 {
 .fa-spinner {
  
     margin-right: 2.5%;
-    /* height: 120px; */
     animation: spin 2s linear infinite;
     
   }
@@ -223,8 +220,6 @@ hr.style14 {
 #revTime {
     background-color: rgb(15, 157, 88)
 }
-
-
 
 .iconSmall {
     font-size: 30px;

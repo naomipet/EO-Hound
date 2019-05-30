@@ -17,7 +17,6 @@ const app = express();
 
 app.engine ('hbs', handlebars( {
   extname: 'hbs',
-  // defaultLayout: 'main',
   defaultView: 'default',
   layoutsDir: __dirname + '/views/',
   partialsDir: __dirname + '/views/partials/'
