@@ -95,14 +95,19 @@ app.get('/filter', (request, response) => {
       var token1 =[]
       if(loadImage == true){
       //collection of images clipped to bbox, for image sample
-        var filteredCollection = collection.map(function(im){return im.clip(bbox)})
+      var filteredCollection = collection.map(function(im){return im.clip(bbox)})
       //get maps tokens and respond
       var rgbVis = {
         min: 0.0,
         max: 3000,
         bands: ['B4', 'B3', 'B2'],
       };
-      filteredCollection.getMap(rgbVis, ({mapid, token}) => {
+
+      var min = filteredCollection.min();
+
+      // Select the red, green and blue bands.
+      var result = min.select('B4', 'B3', 'B2');
+      result.getMap(rgbVis, ({mapid, token}) => {
         mapid1.push(mapid.toString())
         token1.push(token.toString())
         AddFieldToJson(output, 'mapid', mapid1)
@@ -130,14 +135,7 @@ app.get('/granule', (request, response) => {
   if(request.query.imageCollection == 'Landsat'){
     var path = Number(granuleName.slice(0, 3));
     var row = Number(granuleName.slice(3, 6));
-    granuleImages = ee.ImageCollection(params.collectionSource).filter(ee.Filter.eq('WRS_PATH', path)).filter(ee.Filter.eq('WRS_ROW', row)).filterDate(start,finish).filter(ee.Filter.lt(params.cloudDescriptor, maxCloud))
-    // orbitDirection = granuleImages.first().get(params.orbitDirDescriptor).getInfo()
-    // if(orbitDirection == 'D'){
-    //   orbitDirection = 'DESCENDING'
-    // }
-    // else{
-    //   orbitDirection = 'ASCENDING'
-    // }
+    granuleImages = ee.ImageCollection(params.collectionSource).filterMetadata('WRS_PATH','equals', path).filterMetadata('WRS_ROW','equals', row).filterDate(start,finish).filter(ee.Filter.lt(params.cloudDescriptor, maxCloud))
     orbitDirection = 'DESCENDING'
   }
   else {
@@ -145,25 +143,31 @@ app.get('/granule', (request, response) => {
     orbitDirection = granuleImages.first().get(params.orbitDirDescriptor).getInfo()
   }
 
-  var count = granuleImages.size();
-  var clouds = granuleImages.aggregate_array(params.cloudDescriptor)
+  var count = granuleImages.size().getInfo();
+  if(count > 0){
+    var clouds = granuleImages.aggregate_array(params.cloudDescriptor)
 
-  // Get the date range of images in the collection.
-  var range = granuleImages.reduceColumns(ee.Reducer.minMax(), ["system:time_start"])
-  var minDate = ee.Date(range.get('min'))
-  var maxDate = ee.Date(range.get('max'))
-  var dates = GetImageDates(granuleImages);
-  var diffs = GetDayDif(dates);
-  var revisitTime = 0;
-  if(diffs != 0)
-  {
-    revisitTime = diffs.reduce(ee.Reducer.mean()).getInfo().toFixed(2);
+    // Get the date range of images in the collection.
+    var range = granuleImages.reduceColumns(ee.Reducer.minMax(), ["system:time_start"])
+    //var minDate = ee.Date(range.get('min'))
+    //var maxDate = ee.Date(range.get('max'))
+    var dates = GetImageDates(granuleImages)
+    var diffs = GetDayDif(dates);
+    var revisitTime = 0;
+    if(diffs != 0)
+    {
+      revisitTime = diffs.reduce(ee.Reducer.mean()).getInfo().toFixed(2);
+    }
+    var datesList = dates.getInfo().map(date => new Date(date))
+    var cloudList = clouds.getInfo().map(cloud => parseFloat(cloud))
+    var maxDate=new Date(Math.max.apply(null,datesList));
+    var minDate=new Date(Math.min.apply(null,datesList));
+    var histLists = GetHistogramLists(datesList, cloudList);
+    response.render('statistic', {name: granuleName, orbitDirection: orbitDirection, start: minDate.toLocaleDateString("en-US"), end: maxDate.toLocaleDateString("en-US"), numOfImages: count, revisitTime: revisitTime, labels: histLists.labels, dataCloud:histLists.data, dataCount:histLists.numOfImages});
   }
-  var histLists = GetHistogramLists(dates.getInfo(), clouds.getInfo());
-
-
-
-  response.render('statistic', {name: granuleName, orbitDirection: orbitDirection, start: minDate.format('d-M-Y').getInfo(), end: maxDate.format('d-M-Y').getInfo(), numOfImages: count.getInfo(), revisitTime: revisitTime, labels: histLists.labels, dataCloud:histLists.data, dataCount:histLists.numOfImages});
+  else{
+    response.render('about');
+  }
 })
 
 app.get('/about', (request, response) => {
@@ -239,13 +243,8 @@ GetCloudStat = function(collection, cloudDescriptor){
         reducer: ee.Reducer.mean(),
         selectors: [cloudDescriptor],
       })
-  var min = collection.reduceColumns({
-        reducer: ee.Reducer.min(),
-        selectors: [cloudDescriptor],
-      })
   return {
       mean: mean.get('mean'),
-      min: min.get('min')
   };
 }
 
@@ -299,11 +298,9 @@ AddFieldToJson = function(base, key, value){
   base[key]=value;
 }
 
-GetHistogramLists = function(dates, clouds){
+GetHistogramLists = function(datesList, cloudList){
   //var datesStrList = dates.split(',')
   //var cloudsStrList = clouds.split(',')
-  var datesList = dates.map(date => new Date(date))
-  var cloudList = clouds.map(cloud => parseFloat(cloud))
 
   var firstYear = datesList[0].getYear();
   var lastYear = datesList[datesList.length-1].getYear();
@@ -325,11 +322,11 @@ GetHistogramLists = function(dates, clouds){
       for(j = 0; j < cloudList.length; j++){
         if(datesList[j].getMonth() == month){
           avg += cloudList[j]
-          numOfImages[i]++;
           count ++;
         }
       }
       data[i] = avg/count;
+      numOfImages[i] = count;
     }
   }
   else {

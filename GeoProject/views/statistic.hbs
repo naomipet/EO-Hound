@@ -96,15 +96,13 @@
     </div>
     <div class="row my-4">
         <div class="col-12">
-            <h4 class="titleStat">Clouds Coverage</h4>
             <div id="containerChart">
                 <canvas id="CloudChart"></canvas>
         </div>
     </div>
 </div>
-  <div class="row">
+  <div class="row my-4">
         <div class="col-12">
-            <h4 class="titleStat">Number of Images</h4>
             <div id="containerChart">
                 <canvas id="ImageChart"></canvas>
         </div>
@@ -134,8 +132,39 @@
         }]
     },
     // Configuration options go here
+    // Configuration options go here
     options: {
-        maintainAspectRatio: false
+      maintainAspectRatio: false,
+        responsive: true,
+        legend: {
+            display: false
+        },
+        hover: {
+            mode: 'label'
+        },
+        scales: {
+            xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Time'
+                    }
+                }],
+            yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Cloud Cover %'
+                    },
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+        },
+        title: {
+            display: true,
+            text: 'Cloud Cover Over Time'
+        }
     }
 });
 
@@ -160,8 +189,38 @@
     },
     // Configuration options go here
     options: {
-        maintainAspectRatio: false
-    }
+          maintainAspectRatio: false,
+          responsive: true,
+          legend: {
+              display: false
+          },
+          hover: {
+              mode: 'label'
+          },
+          scales: {
+              xAxes: [{
+                      display: true,
+                      scaleLabel: {
+                          display: true,
+                          labelString: 'Time'
+                      }
+                  }],
+              yAxes: [{
+                      display: true,
+                      scaleLabel: {
+                          display: true,
+                          labelString: 'Number of Images'
+                      },
+                      ticks: {
+                          beginAtZero: true
+                      }
+                  }]
+          },
+          title: {
+              display: true,
+              text: 'Images Over Time'
+          }
+      }
 });
 
 </script>

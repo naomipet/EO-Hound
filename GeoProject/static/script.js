@@ -51,11 +51,7 @@ const initialize = () => {
   map.overlayMapTypes.setAt(0, osmMapType)
   map.overlayMapTypes.push(null);        // Placeholder for ee
 
-  map.data.addListener('addfeature', function(e) {
-    bounds = new google.maps.LatLngBounds();
-    processPoints(e.feature.getGeometry(), bounds.extend, bounds);
-    map.fitBounds(bounds);
-  });
+
 
   //form and general statistic
   var formInput = document.getElementById('form');
@@ -103,9 +99,10 @@ var addLayers = function(mapId, token){
     };
   }
 }
-
+var listener1
 function loadGeoJsonString(geoString) {
   ClearAllFeatures()
+  listener1 = map.data.addListener('addfeature', fitJsonBounds)
   // Define the LatLng coordinates for another inner path.
   var geojson = JSON.parse(geoString);
   map.data.addGeoJson(geojson)
@@ -118,6 +115,15 @@ function loadGeoJsonString(geoString) {
 
   return geojson;
 }
+
+var fitJsonBounds = function(e) {
+  bounds = new google.maps.LatLngBounds();
+  processPoints(e.feature.getGeometry(), bounds.extend, bounds);
+  map.fitBounds(bounds);
+  var zoom = map.getZoom();
+  map.setZoom(zoom - 1)
+  google.maps.event.removeListener(listener1)
+};
 
 function processPoints(geometry, callback, thisArg) {
   if (geometry instanceof google.maps.LatLng) {
