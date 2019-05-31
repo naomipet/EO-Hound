@@ -57,7 +57,8 @@ app.get('/filter', (request, response) => {
     //var res = request.params.geometry.split(",")
     //build bbox
     var geo =[]
-    for (var i = 0; i < 4; i++)
+    var numOfCoord = coord.length / 2
+    for (var i = 0; i < numOfCoord; i++)
     {
       geo.push([parseFloat(coord[2*i]), parseFloat(coord[2*i+1])])
     }
@@ -99,15 +100,11 @@ app.get('/filter', (request, response) => {
       //get maps tokens and respond
       var rgbVis = {
         min: 0.0,
-        max: 3000,
-        bands: ['B4', 'B3', 'B2'],
+        max: 3000
       };
 
-      var min = filteredCollection.min();
-
-      // Select the red, green and blue bands.
-      var result = min.select('B4', 'B3', 'B2');
-      result.getMap(rgbVis, ({mapid, token}) => {
+      var min = filteredCollection.min().select('B4', 'B3', 'B2');
+      min.getMap(rgbVis, ({mapid, token}) => {
         mapid1.push(mapid.toString())
         token1.push(token.toString())
         AddFieldToJson(output, 'mapid', mapid1)

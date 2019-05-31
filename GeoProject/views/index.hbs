@@ -272,6 +272,7 @@
   }
 
   function readFile(file) {
+    clearImageSample()
     var reader = new FileReader();
     reader.onload = readSuccess;
     function readSuccess(evt) {
