@@ -1,5 +1,5 @@
 html, body {
-    background: #fafafa;
+    background: #ffffff;
     color: #333333;
     height: 100%;
     width: 100%;
@@ -260,4 +260,17 @@ hr.style14 {
 #logoBig {
     width: 100%;
     height: auto;
+}
+
+
+.titleError {
+    font-size: 2rem;
+    color: rgb(47, 91, 183);  
+}
+
+.scrollable-menu {
+    height: auto;
+    max-height: 200px;
+    overflow-x: hidden;
+    padding-right: 5px;
 }

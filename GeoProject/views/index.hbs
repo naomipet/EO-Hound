@@ -58,14 +58,14 @@
 
   <div id="containerStatGen" class="container">
     <div class="row">
-      <div class="col-12">
-         <div class="dropdown dropdownPosition">
-            <button id="buttonColor" class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Choose Granule
+      <div class="col-12 mt-3">
+         <div class="btn-group mb-2">
+            <button id="buttonColor" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+              Choose Tile <span class="caret"></span>
             </button>
-            <div id="granuleName" class="dropdown-menu" aria-labelledby="dropdownMenuButton" onmouseout=highlightGranule()>
+            <ul id="granuleName" class="dropdown-menu scrollable-menu" role="menu" onmouseout=highlightGranule()>
 
-            </div>
+            </ul>
           </div>
         <h3 id="formTitleStat">General Statistics</h3>
       </div>
@@ -144,7 +144,7 @@
           </div>
           <div class="row">
             <div class="col-12">
-              <h4 class="titleSquareSmall">Number of Granules</h4>
+              <h4 class="titleSquareSmall">Number of Tiles</h4>
             </div>
           </div>
         </div>
@@ -238,7 +238,7 @@
             $("#avgCloud").html("")
             $("#numOfGranules").html("")
             names.forEach(function(element, index) {
-              var txt="<a class='dropdown-item' onclick=openGranuleStat('"+element+"') onmouseover=highlightGranule('"+element+"')>" + element + ": covering "+ areas[index]+"% of bbox</a>"
+              var txt="<li><a class='dropdown-item' onclick=openGranuleStat('"+element+"') onmouseover=highlightGranule('"+element+"')>" + element + ": covering "+ areas[index]+"% of bbox</a></li>"
               $("#granuleName").append(txt)
             })
             $("#imageNumber").html("<p>" + count + "</p>")
