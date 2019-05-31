@@ -32,7 +32,7 @@
             </div>
             <label for="jsonBbox">Input Bounding Box: </label>
             <div class="form-group">
-                <input class="form-control" type="file" name="jsonBbox" id="bbox" placeholder="GeoJson" accept=".geojson">
+                <input class="form-control" type="file" name="jsonBbox" id="bbox" placeholder="GeoJson" accept=".geojson" required>
             </div>
            <div class="form-check checkboxPosition">
               <input type="checkbox" name="showImage" class="form-check-input" id="loadImage" checked="checked" value="true"/>
@@ -46,7 +46,7 @@
                 <input class="form-control" type="number" name="cloudFilter" placeholder="Cloud filter" min="0" max="100" required>
             </div>
             <div class="form-group">
-                <button id="buttonColor" class="btn btn-lg btn-primary btn-block"><i class="fas fa-spinner"></i>Run</button>
+                <button id="buttonColor" type="button" class="btn btn-lg btn-primary btn-block"><i class="fas fa-spinner"></i>Run</button>
             </div>
         </form>
         </div>
@@ -173,7 +173,9 @@
   var divClose = document.getElementById("form")
   var divOpen = document.getElementById("formClose")
   var icnLoad = document.getElementsByClassName("fa-spinner")
+  var runButton = document.getElementById("buttonColor")
   var divStatistic = document.getElementById("containerStatGen")
+  var form = document.getElementById("myForm")
 
   $(icnLoad).hide()
 
@@ -187,22 +189,42 @@
     $(divClose).fadeToggle()
   })
 
-  $("#buttonColor").click(function(){
+  $(runButton).click(function(clickEvent){
     //check if the form is filles than show the loader
-    $(icnLoad).show()
+    var missingFieldCounter = 0; // we count the number of field missing
+      $(':input[required]').each(function() // for each input that contains "required" attribute
+      {
+          if($(this).val() == "") // if the required input is not filled
+          {
+              missingFieldCounter+=1;
+          }
+      });
+
+      if(missingFieldCounter == 0) // if the counter has never been incremented (every field is filled)
+      {
+          $(icnLoad).show()
+          //manually create event, oterwise addEventListener doesn't trigger
+          const domEvent = document.createEvent('Event')
+          domEvent.initEvent('submit', false, true)
+          clickEvent.target.closest('form').dispatchEvent(domEvent)
+      }
+
   })
 
     var params = ''
     var granulesAscending, granulesDescending
-    document.forms['myForm'].addEventListener('submit', (event) => {
+
+    form.addEventListener('submit', (event) => {
     event.preventDefault();
     $(divStatistic).fadeOut()
+    runButton.disabled = true;
     clearImageSample()
     ClearGranules()
+
     $.ajax({
         url: '/filter',
         dataType : 'json', // Try text also, maybe the api donn't send result in json. Text always work.
-        data: $('#myForm').serialize(), // The form to send.
+        data: $(form).serialize(), // The form to send.
         success : function (response) {// Get response on successful sever connection.
           granulesDescending = response['granulesDescending']
           granulesAscending = response['granulesAscending']
@@ -229,7 +251,7 @@
             }
             addGranulesToMap(granulesAscending)
             addGranulesToMap(granulesDescending)
-            params = $('#myForm').serialize()
+            params = $(form).serialize()
 
             //show general statistic
             $(divStatistic).fadeIn()
@@ -245,9 +267,11 @@
             $("#area").html("<p>" + areaKm2 + "km<sup>2</sup></p>")
           }
           $(icnLoad).hide()
+          runButton.disabled = false;
           }, error: function (err) { // Get error on failed connection to server.
             $(icnLoad).hide()
             alert("server error")
+            runButton.disabled = false;
           }
 
 

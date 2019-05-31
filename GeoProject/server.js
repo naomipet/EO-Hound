@@ -58,6 +58,9 @@ app.get('/filter', (request, response) => {
     //build bbox
     var geo =[]
     var numOfCoord = coord.length / 2
+    if(numOfCoord <= 2){
+      Error('Invalid geomtry', response)
+    }
     for (var i = 0; i < numOfCoord; i++)
     {
       geo.push([parseFloat(coord[2*i]), parseFloat(coord[2*i+1])])
@@ -72,7 +75,7 @@ app.get('/filter', (request, response) => {
     AddFieldToJson(output, 'count', count)
     //check if any images exist
     if(count == '0'){
-      response.send(output);
+      Error('No mages for required dates',response)
     }
     else {
       var bboxArea = bbox.geometry().area().getInfo()
@@ -163,7 +166,7 @@ app.get('/granule', (request, response) => {
     response.render('statistic', {name: granuleName, orbitDirection: orbitDirection, start: minDate.toLocaleDateString("en-US"), end: maxDate.toLocaleDateString("en-US"), numOfImages: count, revisitTime: revisitTime, labels: histLists.labels, dataCloud:histLists.data, dataCount:histLists.numOfImages});
   }
   else{
-    response.render('errorNoData');
+    Error('No images for the required tile', response)
   }
 })
 
@@ -347,4 +350,8 @@ GetHistogramLists = function(datesList, cloudList){
       data: data,
       numOfImages: numOfImages
   };
+}
+
+var Error = function(message, response){
+  response.render('errorNoData', {error: message});
 }
