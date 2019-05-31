@@ -174,6 +174,9 @@ app.get('/about', (request, response) => {
   response.render('about');
 });
 
+app.get('/error', (request, response) => {
+  response.render('errorNoData');
+});
 
 // Private key, in `.json` format, for an Earth Engine service account.
 const PRIVATE_KEY = require('./privatekey.json');
