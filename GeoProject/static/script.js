@@ -116,6 +116,8 @@ function loadGeoJsonString(geoString) {
   return geojson;
 }
 
+function gm_authFailure() { alart('aaa')};
+
 var fitJsonBounds = function(e) {
   bounds = new google.maps.LatLngBounds();
   processPoints(e.feature.getGeometry(), bounds.extend, bounds);

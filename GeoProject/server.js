@@ -163,16 +163,12 @@ app.get('/granule', (request, response) => {
     response.render('statistic', {name: granuleName, orbitDirection: orbitDirection, start: minDate.toLocaleDateString("en-US"), end: maxDate.toLocaleDateString("en-US"), numOfImages: count, revisitTime: revisitTime, labels: histLists.labels, dataCloud:histLists.data, dataCount:histLists.numOfImages});
   }
   else{
-    response.render('about');
+    response.render('errorNoData');
   }
 })
 
 app.get('/about', (request, response) => {
   response.render('about');
-});
-
-app.get('/error', (request, response) => {
-  response.render('errorNoData');
 });
 
 // Private key, in `.json` format, for an Earth Engine service account.

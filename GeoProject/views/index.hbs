@@ -196,6 +196,7 @@
     var granulesAscending, granulesDescending
     document.forms['myForm'].addEventListener('submit', (event) => {
     event.preventDefault();
+    $(divStatistic).fadeOut()
     clearImageSample()
     ClearGranules()
     $.ajax({
@@ -231,12 +232,9 @@
             params = $('#myForm').serialize()
 
             //show general statistic
-            $(divStatistic).show()
+            $(divStatistic).fadeIn()
             //push values in the statistic
             $("#granuleName").html("")
-            $("#imageNumber").html("")
-            $("#avgCloud").html("")
-            $("#numOfGranules").html("")
             names.forEach(function(element, index) {
               var txt="<li><a class='dropdown-item' onclick=openGranuleStat('"+element+"') onmouseover=highlightGranule('"+element+"')>" + element + ": covering "+ areas[index]+"% of bbox</a></li>"
               $("#granuleName").append(txt)
@@ -282,6 +280,7 @@
     };
     reader.readAsText(file);
   }
+
 
 
 
