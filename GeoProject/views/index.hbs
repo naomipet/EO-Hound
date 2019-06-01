@@ -201,12 +201,23 @@
       });
 
       if(missingFieldCounter == 0) // if the counter has never been incremented (every field is filled)
-      {
-          $(icnLoad).show()
-          //manually create event, oterwise addEventListener doesn't trigger
-          const domEvent = document.createEvent('Event')
-          domEvent.initEvent('submit', false, true)
-          clickEvent.target.closest('form').dispatchEvent(domEvent)
+      {   
+        //extract from the form the date values
+          var date1 = new Date($('input[name="dateStart"]').val())
+          var date2 = new Date($('input[name="dateEnd"]').val())
+          var diffTime = date2.getTime() - date1.getTime();
+        //if the difference is positive run
+          if(diffTime >= 0) {
+          
+            $(icnLoad).show()
+            //manually create event, oterwise addEventListener doesn't trigger
+            const domEvent = document.createEvent('Event')
+            domEvent.initEvent('submit', false, true)
+            clickEvent.target.closest('form').dispatchEvent(domEvent)
+          } else {
+            alert("Date interval not valid!");
+          }
+          
       }
 
   })
