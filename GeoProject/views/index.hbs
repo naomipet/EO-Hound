@@ -58,7 +58,7 @@
 
   <div id="containerStatGen" class="container">
     <div class="row">
-      <div class="col-12 mt-3">
+      <div class="col-6 mt-3">
          <div class="btn-group mb-2">
             <button id="buttonColor" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
               Choose Tile <span class="caret"></span>
@@ -67,8 +67,18 @@
 
             </ul>
           </div>
-        <h3 id="formTitleStat">General Statistics</h3>
       </div>
+      <div id="downloadLink" class="col-6 mt-3">
+          {{!-- <button id="buttonColor" class="btn btn-primary downloadButton"><i class="fas fa-file-download"></i>
+         
+          </button>  --}}
+          <a href="" class="btn btn-primary downloadButton active" role="button" aria-pressed="true"><i class="fas fa-file-download"></i></a>
+      </div>
+    </div>  
+      <div class="row">
+        <div class="col-12">
+          <h3 id="formTitleStat">General Statistics</h3>
+        </div>
     </div>
     <div class="row">
       <div class="col-6">
@@ -256,6 +266,9 @@
         success : function (response) {// Get response on successful sever connection.
           granulesDescending = response['granulesDescending']
           granulesAscending = response['granulesAscending']
+          //path for downloading the file
+          var userFileName = response['fileName']
+        
           var count = response['count']
           if(count == '0')
           {
@@ -289,6 +302,8 @@
               var txt="<li><a class='dropdown-item' onclick=openGranuleStat('"+element+"') onmouseover=highlightGranule('"+element+"')>" + element + ": covering "+ areas[index]+"% of bbox</a></li>"
               $("#granuleName").append(txt)
             })
+            
+            $("#downloadLink").html('<a href="/' + userFileName + '" id="buttonColor" class="btn btn-primary downloadButton active" role="button" aria-pressed="true" download="Tiles.txt"><i class="fas fa-file-download"></i></a>')
             $("#imageNumber").html("<p>" + count + "</p>")
             $("#avgCloud").html("<p>" + cloudsAvg + "%</p>")
             $("#numOfGranules").html("<p>" + names.length + "</p>")

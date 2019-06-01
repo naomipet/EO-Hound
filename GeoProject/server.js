@@ -9,6 +9,7 @@ const ee = require('@google/earthengine');
 const express = require('express');
 const handlebars  = require('express-handlebars');
 var bodyParser = require('body-parser');
+var fs = require("fs");
 
 
 
@@ -25,6 +26,14 @@ app.set('view engine', '.hbs');
 app.use('/static', express.static('static'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json())
+
+//check creation date of txt file
+// var pathTxt = 'static/download/'
+// fs.readdir(pathTxt, (err, files) => {
+//   files.forEach(file => {
+//     console.log(file)
+//   });
+// })
 
 
 var imageCollection = null;
@@ -44,6 +53,7 @@ app.get('/filter', (request, response) => {
 
 
   var params = GetCollectionParams(request.query.imageCollection)
+
   dateStart = request.query.dateStart;
   dateEnd = request.query.dateEnd;
   var loadImage = false
@@ -73,6 +83,9 @@ app.get('/filter', (request, response) => {
     var count = collection.size().getInfo()
     var output = {} // empty Object
     AddFieldToJson(output, 'count', count)
+
+  
+
     //check if any images exist
     if(count == '0'){
       Error('No mages for required dates',response)
@@ -95,6 +108,16 @@ app.get('/filter', (request, response) => {
       AddFieldToJson(output, 'names', footprintData.names)
       AddFieldToJson(output, 'aream2', bboxArea.toFixed(2))
 
+       //generate txt file
+      var completeNameGranule = footprintData.names;
+      var randNum = Math.floor(Math.random() * 1001).toString() 
+      var filename = "static/download/listTiles" + randNum + ".txt"
+
+      fs.writeFile(filename, completeNameGranule, (err) => {
+        if (err) console.log(err);
+        console.log("Successfully Written to File.");
+      });
+
       var mapid1 =[]
       var token1 =[]
       if(loadImage == true){
@@ -112,6 +135,8 @@ app.get('/filter', (request, response) => {
         token1.push(token.toString())
         AddFieldToJson(output, 'mapid', mapid1)
         AddFieldToJson(output, 'token', token1)
+        //add to json file name
+        AddFieldToJson(output,'fileName',filename)
         response.send(output);
       })
     }

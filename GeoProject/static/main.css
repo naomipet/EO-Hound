@@ -176,6 +176,7 @@ hr.style14 {
     border: 0;
 }
 
+
 #containerStatGen {
     display: none;
     width: 400px;
@@ -190,11 +191,22 @@ hr.style14 {
     margin-top: 15px;
     margin-bottom: 10px;
 }
+.fa-file {
+    font-size: 20px;
+    font-weight: 900;
+    margin-top: 4px;
+}
 
 #formTitleStat {
     font-weight: 700;
     text-align: center;
     color: rgb(47, 91, 183);
+}
+
+.downloadButton {
+    float: right;
+    width: 40px;
+    padding: 6px;
 }
 
 
