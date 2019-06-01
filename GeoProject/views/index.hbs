@@ -152,6 +152,20 @@
     </div>
   </div>
 
+  
+<div id="errorDate">
+      <div class="row">
+        <div class="col-lg">
+          <span id="closeTab">
+            <i class="far fa-times-circle"></i>
+          </span>
+          <h3 id="formTitle">Date interval not valid!</h3>
+      </div>
+    </div>
+  </div>
+
+
+
 
 
   <!-- The element into which we render the Google Map. -->
@@ -176,6 +190,7 @@
   var runButton = document.getElementById("buttonColor")
   var divStatistic = document.getElementById("containerStatGen")
   var form = document.getElementById("myForm")
+  var errorDate = document.getElementById("errorDate")
 
   $(icnLoad).hide()
 
@@ -190,6 +205,7 @@
   })
 
   $(runButton).click(function(clickEvent){
+    
     //check if the form is filles than show the loader
     var missingFieldCounter = 0; // we count the number of field missing
       $(':input[required]').each(function() // for each input that contains "required" attribute
@@ -215,7 +231,8 @@
             domEvent.initEvent('submit', false, true)
             clickEvent.target.closest('form').dispatchEvent(domEvent)
           } else {
-            alert("Date interval not valid!");
+            alert("Date interval not valid!")
+            //$(errorDate).show()
           }
           
       }

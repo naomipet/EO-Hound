@@ -170,9 +170,24 @@ app.get('/granule', (request, response) => {
   }
 })
 
+//documentation page
 app.get('/about', (request, response) => {
-  response.render('about');
-});
+  response.render('about')
+})
+
+//render 404 error page 
+app.use(function(req, res, next) {
+  var error = res.status(404)
+  res.render('404')
+})
+
+//render 500 error page
+app.use(function(req, res, next) {
+  var error = res.status(500)
+  res.render('500')
+})
+
+
 
 // Private key, in `.json` format, for an Earth Engine service account.
 const PRIVATE_KEY = require('./privatekey.json');

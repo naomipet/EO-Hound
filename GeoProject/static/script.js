@@ -63,6 +63,10 @@ const initialize = () => {
   var statisticDiv = document.getElementById("containerStatGen");
   map.controls[google.maps.ControlPosition.RIGHT_TOP].push(statisticDiv);
 
+  var errorDate = document.getElementById("errorDate")
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(errorDate);
+
+
 };
 
 var clearImageSample = function(){
