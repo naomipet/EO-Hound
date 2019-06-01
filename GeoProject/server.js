@@ -27,11 +27,15 @@ app.use('/static', express.static('static'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json())
 
-//check creation date of txt file
+// check creation date of txt file
 // var pathTxt = 'static/download/'
 // fs.readdir(pathTxt, (err, files) => {
 //   files.forEach(file => {
 //     console.log(file)
+//   fs.stat(pathTxt + file, function(err, stats){
+//     var cTime = stats.ctime
+//     console.log(cTime)
+//   })
 //   });
 // })
 
