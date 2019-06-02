@@ -1,58 +1,58 @@
 {{> header }}
-  <!-- form -->
 
+  <!-- form -->
   <div id="formClose">
     <span id="openTab">
       <i class="fas fa-sliders-h"></i>
     </span>
   </div>
 
-    <div id="form" class="container">
-      <div class="row">
-        <div class="col-lg">
-          <span id="closeTab">
-            <i class="far fa-times-circle"></i>
-          </span>
-          <h3 id="formTitle">Insert Search Criteria</h3>
-          <hr class="style14">
-        <div>
-        <form action="/filter" method="GET" enctype="multipart/form-data" id="myForm">
-            <label for="collection">Select your collection: </label>
-            <div class="form-group">
-                <select class="form-control" name="imageCollection">
-                  <option value="Landsat">Landsat</option>
-                  <option value="Sentinel1C">Sentinel 1C</option>
-                  <option value="Sentinel2A">Sentinel 2A</option>
-                </select>
-            </div>
-            <label for="dateStart dateEnd ">Sensing period: </label>
-            <div class="form-group">
-                <input class="form-control inputDisp" type="date" name="dateStart" placeholder="Start date" required>
-                <input class="form-control inputDisp float-right" type="date" name="dateEnd" placeholder="End date" required>
-            </div>
-            <label for="jsonBbox">Input Bounding Box: </label>
-            <div class="form-group">
-                <input class="form-control" type="file" name="jsonBbox" id="bbox" placeholder="GeoJson" accept=".geojson" required>
-            </div>
-           <div class="form-check checkboxPosition">
-              <input type="checkbox" name="showImage" class="form-check-input" id="loadImage" checked="checked" value="true"/>
-              <label class="form-check-label marginSet" for="loadImage">Load Image Sample</label>
-            </div>
-            <div class="form-group">
-              <input class="form-control" type="text" name="coordinates" id="geometry">
-            </div>
-            <label for="cloudFilter">Cloud Filter: </label>
-            <div class="form-group">
-                <input class="form-control" type="number" name="cloudFilter" placeholder="Cloud filter" min="0" max="100" required>
-            </div>
-            <div class="form-group">
-                <button id="buttonColor" type="button" class="btn btn-lg btn-primary btn-block"><i class="fas fa-spinner"></i>Run</button>
-            </div>
-        </form>
-        </div>
+  <div id="form" class="container">
+    <div class="row">
+      <div class="col-lg">
+        <span id="closeTab">
+          <i class="far fa-times-circle"></i>
+        </span>
+        <h3 id="formTitle">Insert Search Criteria</h3>
+        <hr class="style14">
+      <div>
+      <form action="/filter" method="GET" enctype="multipart/form-data" id="myForm">
+          <label for="collection">Select your collection: </label>
+          <div class="form-group">
+              <select class="form-control" name="imageCollection">
+                <option value="Landsat">Landsat</option>
+                <option value="Sentinel1C">Sentinel 1C</option>
+                <option value="Sentinel2A">Sentinel 2A</option>
+              </select>
+          </div>
+          <label for="dateStart dateEnd ">Sensing period: </label>
+          <div class="form-group">
+              <input class="form-control inputDisp" type="date" name="dateStart" placeholder="Start date" required>
+              <input class="form-control inputDisp float-right" type="date" name="dateEnd" placeholder="End date" required>
+          </div>
+          <label for="jsonBbox">Input Bounding Box: </label>
+          <div class="form-group">
+              <input class="form-control" type="file" name="jsonBbox" id="bbox" placeholder="GeoJson" accept=".geojson" required>
+          </div>
+          <div class="form-check checkboxPosition">
+            <input type="checkbox" name="showImage" class="form-check-input" id="loadImage" checked="checked" value="true"/>
+            <label class="form-check-label marginSet" for="loadImage">Load Image Sample</label>
+          </div>
+          <div class="form-group">
+            <input class="form-control" type="text" name="coordinates" id="geometry">
+          </div>
+          <label for="cloudFilter">Cloud Filter: </label>
+          <div class="form-group">
+              <input class="form-control" type="number" name="cloudFilter" placeholder="Cloud filter" min="0" max="100" required>
+          </div>
+          <div class="form-group">
+              <button id="buttonColor" type="button" class="btn btn-lg btn-primary btn-block"><i class="fas fa-spinner"></i>Run</button>
+          </div>
+      </form>
       </div>
     </div>
   </div>
+</div>
 
     <!-- General statistic container -->
 
@@ -161,18 +161,15 @@
 
 
 <div id="errorDate">
-      <div class="row">
-        <div class="col-lg">
-          <span id="closeTab">
-            <i class="far fa-times-circle"></i>
-          </span>
-          <h3 id="formTitle">Date interval not valid!</h3>
-      </div>
+    <div class="row">
+      <div class="col-lg">
+        <span id="closeTab">
+          <i class="far fa-times-circle"></i>
+        </span>
+        <h3 id="formTitle">Date interval not valid!</h3>
     </div>
   </div>
-
-
-
+</div>
 
 
   <!-- The element into which we render the Google Map. -->
@@ -221,7 +218,8 @@
           if($(this).val() == "") // if the required input is not filled
           {
               missingFieldCounter+=1;
-          }
+             
+          }    
       });
 
       if(missingFieldCounter == 0) // if the counter has never been incremented (every field is filled)
@@ -243,8 +241,9 @@
             //$(errorDate).show()
           }
 
+      } else {
+        alert("Please, fill all the fields!")
       }
-
   })
 
     var params = ''
