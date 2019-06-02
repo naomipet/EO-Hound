@@ -5,6 +5,9 @@
         <div class="col-8">
             <h4 class="titleStat">Statistics for Granule <strong>{{name}}</strong></h4>
         </div>
+        <div class="col-4 ">
+          <a id="downloadLink" class="btn btn-primary downloadButton active" role="button" aria-pressed="true" ><i class="fas fa-file-download"></i></a>
+        </div>
 
     </div>
     <div class="row">
@@ -109,6 +112,12 @@
 
 
     <script>
+    var downloadLink = document.getElementById("downloadLink")
+
+    //allow to download the txt pressing the button
+    downloadLink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent('{{downloadNames}}'));
+    downloadLink.setAttribute('download', 'TileMetadata.txt');
+
 
     var ctx = document.getElementById('CloudChart').getContext('2d');
     var labelsStr = '{{labels}}'

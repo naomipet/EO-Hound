@@ -329,8 +329,6 @@ GetCollectionParams = function(name){
   };
 }
 
-
-
 AddFieldToJson = function(base, key, value){
   base[key] = []; // empty Array, which you can push() values into
   base[key]=value;
