@@ -1,6 +1,6 @@
 {{> header }}
-  <!-- form -->
 
+  <!-- form -->
   <div id="formClose">
     <span id="openTab">
       <i class="fas fa-sliders-h"></i>
@@ -57,6 +57,7 @@
       </div>
     </div>
   </div>
+</div>
 
     <!-- General statistic container -->
 
@@ -165,18 +166,15 @@
 
 
 <div id="errorDate">
-      <div class="row">
-        <div class="col-lg">
-          <span id="closeTab">
-            <i class="far fa-times-circle"></i>
-          </span>
-          <h3 id="formTitle">Date interval not valid!</h3>
-      </div>
+    <div class="row">
+      <div class="col-lg">
+        <span id="closeTab">
+          <i class="far fa-times-circle"></i>
+        </span>
+        <h3 id="formTitle">Date interval not valid!</h3>
     </div>
   </div>
-
-
-
+</div>
 
 
   <!-- The element into which we render the Google Map. -->
@@ -233,6 +231,7 @@
           if($(this).val() == "") // if the required input is not filled
           {
               missingFieldCounter+=1;
+
           }
       });
 
@@ -255,8 +254,9 @@
             //$(errorDate).show()
           }
 
+      } else {
+        alert("Please, fill all the fields!")
       }
-
   })
 
     var params = ''
