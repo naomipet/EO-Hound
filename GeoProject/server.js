@@ -64,10 +64,11 @@ app.get('/filter', (request, response) => {
     {
       geo.push([parseFloat(coord[2*i]), parseFloat(coord[2*i+1])])
     }
-    var poly = ee.Geometry.Polygon(geo)
+    var poly = ee.Geometry.Polygon(geo, null, false)
     var bbox = ee.FeatureCollection(poly)
     //collection of images including all granules related to bbox, for statistics
     var collection = ee.ImageCollection(params.collectionSource).filterBounds(bbox).filterDate(dateStart,dateEnd).filter(ee.Filter.lt(params.cloudDescriptor, cloudFilter))
+
     //var collection = ee.ImageCollection(collectionSource).filterBounds(bbox).filterDate(dateStart,dateEnd).filter(ee.Filter.lt('cloudDescriptor', cloudFilter))
     var count = collection.size().getInfo()
     var output = {} // empty Object
@@ -77,11 +78,11 @@ app.get('/filter', (request, response) => {
 
     //check if any images exist
     if(count == '0'){
-      Error('No mages for required dates',response)
+      Error('No images for required dates',response)
     }
     else {
-      var bboxArea = bbox.geometry().area().getInfo()
-      var footprintData = GetFootpringData(request.query.imageCollection, bbox, bboxArea, params.nameDescriptor)
+      var bboxArea = bbox.geometry().area(10).getInfo()
+      var footprintData = GetFootpringData(request.query.imageCollection, bbox, bboxArea, params.nameDescriptor, response)
       //calc statistics on images
       var cloudsStat = GetCloudStat(collection, params.cloudDescriptor)
       // Get the date range of images in the collection.
@@ -207,15 +208,29 @@ ee.data.authenticateViaPrivateKey(PRIVATE_KEY, () => {
 
 //utils
 
-GetFootpringData = function(collectionName, bbox, bboxArea, nameDescriptor){
+GetFootpringData = function(collectionName, bbox, bboxArea, nameDescriptor,response){
   var footprint, names
   var covarageDescending ={}
   var  covarageAscending = {}
   if(collectionName == 'Landsat'){
   //feature collection of all granules partially covering the bbox
+    try{
     footprint = ee.FeatureCollection('users/naomipet/landsat_descending').filterBounds(bbox)
     covarageDescending = GetCoverage(footprint, bbox, bboxArea, nameDescriptor).getInfo()
     names = footprint.aggregate_array(nameDescriptor).getInfo()
+  }catch(e)
+  {
+    var output = {} // empty Object
+    if(e.message == 'Collection query aborted after accumulating over 5000 elements.')
+    AddFieldToJson(output, 'error', 'Too many images for query. Try choosing smaller geometry')
+    else{
+      //general error..
+      AddFieldToJson(output, 'error', e.message)
+    }
+    response.send(output);
+    var r = request(url)
+    r.abort()
+  }
     //footprint = ee.FeatureCollection('users/naomipet/landsat_ascending').filterBounds(bbox)
     //covarageAscending =(GetCoverage(footprint, bbox, bboxArea, nameDescriptor).getInfo())
     //names +=(","+footprint.aggregate_array(nameDescriptor).getInfo())
@@ -235,7 +250,7 @@ GetFootpringData = function(collectionName, bbox, bboxArea, nameDescriptor){
 GetCoverage = function(geomeries, bbox, bboxArea, nameDescriptor) {
   /*gets the coverage precentage of a bbox in a feature*/
   return ee.FeatureCollection(geomeries.map(function(feature) {
-    var inter = feature.intersection(bbox.geometry())
+    var inter = feature.intersection(bbox.geometry(), 5)
     var featureInt = ee.Feature(inter)
     var name = feature.get(nameDescriptor)
     feature = feature.set({appName: name})
