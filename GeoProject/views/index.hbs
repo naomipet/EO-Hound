@@ -30,21 +30,25 @@
                 <input class="form-control inputDisp" type="date" name="dateStart" placeholder="Start date" required>
                 <input class="form-control inputDisp float-right" type="date" name="dateEnd" placeholder="End date" required>
             </div>
-            <label for="jsonBbox">Input Bounding Box: </label>
+            <label for="jsonBbox">Input bounding box: </label>
             <div class="form-group">
                 <input class="form-control" type="file" name="jsonBbox" id="bbox" placeholder="GeoJson" accept=".geojson" required>
             </div>
            <div class="form-check checkboxPosition">
               <input type="checkbox" name="showImage" class="form-check-input" id="loadImage" checked="checked" value="true"/>
-              <label class="form-check-label marginSet" for="loadImage">Load Image Sample</label>
+              <label class="form-check-label marginSet" for="loadImage">Load image sample</label>
             </div>
             <div class="form-group">
               <input class="form-control" type="text" name="coordinates" id="geometry">
             </div>
-            <label for="cloudFilter">Cloud Filter: </label>
+            <label for="cloudFilter">Max cloud cover: </label>
             <div class="form-group">
-                <input class="form-control" type="number" name="cloudFilter" placeholder="Cloud filter" min="0" max="100" required>
+              <div class="slidecontainer">
+                <input type="range" min="1" max="100" value="100" class="slider" name="cloudFilter" id="cloudSlider">
+                <output id="sliderValue">100% <output>
+              </div>
             </div>
+
             <div class="form-group">
                 <button id="buttonColor" type="button" class="btn btn-lg btn-primary btn-block"><i class="fas fa-spinner"></i>Run</button>
             </div>
@@ -191,6 +195,7 @@
 
   <!-- Create a callback to boot our application. -->
   <script>
+
   var divClose = document.getElementById("form")
   var divOpen = document.getElementById("formClose")
   var icnLoad = document.getElementsByClassName("fa-spinner")
@@ -199,8 +204,15 @@
   var form = document.getElementById("myForm")
   var errorDate = document.getElementById("errorDate")
   var downloadLink = document.getElementById("downloadLink")
-
+  var cloudSlider = document.getElementById("cloudSlider")
+  var sliderValue = document.getElementById("sliderValue")
   $(icnLoad).hide()
+  sliderValue.innerHTML = cloudSlider.value + "%"; // Display the default slider value
+  cloudSlider.oninput = function() {
+    sliderValue.innerHTML = cloudSlider.value + "%";
+  }
+
+
 
   $("#closeTab").click(function(){
     $(divClose).fadeToggle()

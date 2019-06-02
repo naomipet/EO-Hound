@@ -24,7 +24,7 @@ html, body {
 #info {
     width: 100%;
     height:100px;
-   
+
 }
 
 #map {
@@ -64,7 +64,7 @@ html, body {
 input[type=checkbox] {
     transform: scale(2);
     background-color: #ffffff;
-  
+
   }
 .checkboxPosition {
     margin-left: 9px
@@ -76,7 +76,7 @@ input[type=checkbox] {
 
 #form {
     width: 400px;
-    height: auto; 
+    height: auto;
     background-color: rgba(255,255,255,0.9);
     margin-top: 5px;
     margin-left: 10px;
@@ -86,7 +86,7 @@ input[type=checkbox] {
 
 #formClose {
     width: 40px;
-    height: auto; 
+    height: auto;
     background-color: rgb(255,255,255);
     margin-top: 10px;
     margin-left: 10px;
@@ -94,7 +94,7 @@ input[type=checkbox] {
     border-radius: 5px;
     text-align: center;
     display: none;
-    
+
 
 }
 #openTab {
@@ -102,7 +102,7 @@ input[type=checkbox] {
 }
 
 #openTab:hover {
-    
+
     width: 50px;
     font-size: x-large;
     color: rgb(47, 91, 183);
@@ -120,13 +120,13 @@ label {
     font-weight: 700;
 }
 
-hr.style14 { 
-    border: 0; 
-    height: 1px; 
+hr.style14 {
+    border: 0;
+    height: 1px;
     background-image: -webkit-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
     background-image: -moz-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
     background-image: -ms-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
-    background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0); 
+    background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
   }
 
 .inputDisp {
@@ -139,7 +139,7 @@ hr.style14 {
     margin-top: 10px;
     width: 50px;
     font-size: large;
-    
+
   }
 
 #closeTab:hover {
@@ -155,21 +155,46 @@ hr.style14 {
 }
 
 .fa-spinner {
- 
+
     margin-right: 2.5%;
     animation: spin 2s linear infinite;
-    
+
   }
-  
+
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
-  
+
 #geometry {
     display: none;
 }
 
+.slidecontainer {
+  width: 80%; /* Width of the outside container */
+
+}
+
+/* The slider itself */
+.slider {
+  width: 80%; /* Full-width */
+  height: 25px; /* Specified height */
+  background: rgb(47, 91, 183); /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+  vertical-align: bottom;
+  margin-bottom: 3px;
+}
+
+#sliderValue {
+  width: 15%;
+  height: 25px;
+  font-size: 15px;
+  font-weight: 700;
+  margin-left: 3px;
+}
 
 #buttonColor {
     background-color: rgb(47, 91, 183);
@@ -213,7 +238,7 @@ hr.style14 {
 
 
 .squareSmall {
-  
+
     width: 100%;
     height: 110px;
     margin-bottom: 7%;
@@ -247,25 +272,25 @@ hr.style14 {
 
 .iconSmall {
     font-size: 30px;
-    margin-left: 7px; 
+    margin-left: 7px;
     margin-top: 7px
-} 
+}
 
 .resultSquareSmall  {
     margin-top: 13px;
     font-size: 17px;
     float: left;
-    
+
 }
 
 .titleSquareSmall {
 
     color: #ffffff;
-    padding-left: 10px; 
+    padding-left: 10px;
     margin-top: 7px;
     font-size: 17px;
     line-height: 18px
-  
+
 }
 
 #chartBoxSmall {
@@ -288,7 +313,7 @@ hr.style14 {
 
 .titleError {
     font-size: 2rem;
-    color: rgb(47, 91, 183);  
+    color: rgb(47, 91, 183);
 }
 
 .scrollable-menu {
