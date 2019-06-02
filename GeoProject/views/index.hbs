@@ -278,17 +278,20 @@
         dataType : 'json', // Try text also, maybe the api donn't send result in json. Text always work.
         data: $(form).serialize(), // The form to send.
         success : function (response) {// Get response on successful sever connection.
-          granulesDescending = response['granulesDescending']
-          granulesAscending = response['granulesAscending']
-          //path for downloading the file
-          var userFileName = response['fileName']
-
+          var error = response['error']
           var count = response['count']
-          if(count == '0')
+          if(error != undefined){
+            alert(error)
+          }
+          else if(count == '0')
           {
             alert("no images for the specified query")
           }
           else{
+            granulesDescending = response['granulesDescending']
+            granulesAscending = response['granulesAscending']
+            //path for downloading the file
+            var userFileName = response['fileName']
             var areas = granulesDescending.features.map(function(d) { return d.properties.areaPrecent.toFixed(2)})
             if(!isEmpty(granulesAscending)){
               areas.concat(granulesAscending.features.map(function(d) { return d.properties.areaPrecent}))
