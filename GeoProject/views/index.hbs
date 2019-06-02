@@ -70,11 +70,11 @@
       </div>
       <div id="downloadLink" class="col-6 mt-3">
           {{!-- <button id="buttonColor" class="btn btn-primary downloadButton"><i class="fas fa-file-download"></i>
-         
+
           </button>  --}}
           <a href="" class="btn btn-primary downloadButton active" role="button" aria-pressed="true"><i class="fas fa-file-download"></i></a>
       </div>
-    </div>  
+    </div>
       <div class="row">
         <div class="col-12">
           <h3 id="formTitleStat">General Statistics</h3>
@@ -162,7 +162,7 @@
     </div>
   </div>
 
-  
+
 <div id="errorDate">
       <div class="row">
         <div class="col-lg">
@@ -215,7 +215,7 @@
   })
 
   $(runButton).click(function(clickEvent){
-    
+
     //check if the form is filles than show the loader
     var missingFieldCounter = 0; // we count the number of field missing
       $(':input[required]').each(function() // for each input that contains "required" attribute
@@ -227,14 +227,14 @@
       });
 
       if(missingFieldCounter == 0) // if the counter has never been incremented (every field is filled)
-      {   
+      {
         //extract from the form the date values
           var date1 = new Date($('input[name="dateStart"]').val())
           var date2 = new Date($('input[name="dateEnd"]').val())
           var diffTime = date2.getTime() - date1.getTime();
         //if the difference is positive run
           if(diffTime >= 0) {
-          
+
             $(icnLoad).show()
             //manually create event, oterwise addEventListener doesn't trigger
             const domEvent = document.createEvent('Event')
@@ -244,7 +244,7 @@
             alert("Date interval not valid!")
             //$(errorDate).show()
           }
-          
+
       }
 
   })
@@ -259,6 +259,20 @@
     clearImageSample()
     ClearGranules()
 
+
+    function download(filename, text) {
+
+      var element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', filename);
+
+      element.style.display = 'none';
+      document.body.appendChild(element);
+
+      element.click();
+
+      document.body.removeChild(element);
+    }
     $.ajax({
         url: '/filter',
         dataType : 'json', // Try text also, maybe the api donn't send result in json. Text always work.
@@ -268,7 +282,7 @@
           granulesAscending = response['granulesAscending']
           //path for downloading the file
           var userFileName = response['fileName']
-        
+
           var count = response['count']
           if(count == '0')
           {
@@ -285,6 +299,7 @@
             var cloudsAvg = JSON.stringify(response['cloudsAvg']).replace(/"/g, '')
             var minDate = JSON.stringify(response['minDate'])
             var maxDate = JSON.stringify(response['maxDate'])
+            var downloadNames = JSON.stringify(response['downloadNames']).replace(/"/g, '').replace(/\[|\]/g, '').replace(/,/g, "\n");
             if(response['mapid'] != undefined){
               ids = JSON.stringify(response['mapid'])
               tokens = JSON.stringify(response['token'])
@@ -302,8 +317,18 @@
               var txt="<li><a class='dropdown-item' onclick=openGranuleStat('"+element+"') onmouseover=highlightGranule('"+element+"')>" + element + ": covering "+ areas[index]+"% of bbox</a></li>"
               $("#granuleName").append(txt)
             })
-            
-            $("#downloadLink").html('<a href="/' + userFileName + '" id="buttonColor" class="btn btn-primary downloadButton active" role="button" aria-pressed="true" download="Tiles.txt"><i class="fas fa-file-download"></i></a>')
+            $("#downloadLink").html('<id="buttonColor" class="btn btn-primary" role="button" aria-pressed="true" onclick = download(\'tiles.txt\', '+downloadNames+')"><i class="fas fa-file-download"></i></a>')
+
+            //element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(downloadNames) + '" id="buttonColor" class="btn btn-primary downloadButton active" role="button" aria-pressed="true" download="Tiles.txt"><i class="fas fa-file-download"></i></a>');
+            // element.setAttribute('download', filename);
+            //
+            // element.style.display = 'none';
+            // document.body.appendChild(element);
+            //
+            // element.click();
+            //
+            // document.body.removeChild(element);
+            download("hello.txt",downloadNames);
             $("#imageNumber").html("<p>" + count + "</p>")
             $("#avgCloud").html("<p>" + cloudsAvg + "%</p>")
             $("#numOfGranules").html("<p>" + names.length + "</p>")

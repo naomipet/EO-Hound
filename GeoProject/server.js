@@ -88,7 +88,7 @@ app.get('/filter', (request, response) => {
     var output = {} // empty Object
     AddFieldToJson(output, 'count', count)
 
-  
+
 
     //check if any images exist
     if(count == '0'){
@@ -103,6 +103,7 @@ app.get('/filter', (request, response) => {
       var range = collection.reduceColumns(ee.Reducer.minMax(), ["system:time_start"])
       var minDate = ee.Date(range.get('min'))
       var maxDate = ee.Date(range.get('max'))
+      var downloadNames = collection.aggregate_array(params.idDescriptor).getInfo()
       //output data
       AddFieldToJson(output, 'cloudsAvg', cloudsStat.mean.getInfo().toFixed(2))
       AddFieldToJson(output, 'minDate', minDate.format('d-M-Y').getInfo())
@@ -111,10 +112,11 @@ app.get('/filter', (request, response) => {
       AddFieldToJson(output, 'granulesAscending', footprintData.covarageAscending)
       AddFieldToJson(output, 'names', footprintData.names)
       AddFieldToJson(output, 'aream2', bboxArea.toFixed(2))
+      AddFieldToJson(output, 'downloadNames', downloadNames)
 
        //generate txt file
       var completeNameGranule = footprintData.names;
-      var randNum = Math.floor(Math.random() * 1001).toString() 
+      var randNum = Math.floor(Math.random() * 1001).toString()
       var filename = "static/download/listTiles" + randNum + ".txt"
 
       fs.writeFile(filename, completeNameGranule, (err) => {
@@ -192,7 +194,8 @@ app.get('/granule', (request, response) => {
     var maxDate=new Date(Math.max.apply(null,datesList));
     var minDate=new Date(Math.min.apply(null,datesList));
     var histLists = GetHistogramLists(datesList, cloudList);
-    response.render('statistic', {name: granuleName, orbitDirection: orbitDirection, start: minDate.toLocaleDateString("en-US"), end: maxDate.toLocaleDateString("en-US"), numOfImages: count, revisitTime: revisitTime, labels: histLists.labels, dataCloud:histLists.data, dataCount:histLists.numOfImages});
+    var downloadNames = granuleImages.aggregate_array(params.idDescriptor).getInfo()
+    response.render('statistic', {name: granuleName, orbitDirection: orbitDirection, start: minDate.toLocaleDateString("en-US"), end: maxDate.toLocaleDateString("en-US"), numOfImages: count, revisitTime: revisitTime, labels: histLists.labels, dataCloud:histLists.data, dataCount:histLists.numOfImages, downloadNames: downloadNames});
   }
   else{
     Error('No images for the required tile', response)
@@ -204,7 +207,7 @@ app.get('/about', (request, response) => {
   response.render('about')
 })
 
-//render 404 error page 
+//render 404 error page
 app.use(function(req, res, next) {
   var error = res.status(404)
   res.render('404')
@@ -313,24 +316,28 @@ GetCollectionParams = function(name){
       cloudDescriptor = 'CLOUD_COVER'
       nameDescriptor = 'WRSPR'
       orbitDirDescriptor = 'MODE'
+      idDescriptor = 'LANDSAT_ID'
       break
     case 'Sentinel2A':
       collectionSource = 'COPERNICUS/S2_SR'
       cloudDescriptor = 'CLOUDY_PIXEL_PERCENTAGE'
       nameDescriptor = 'Name'
       orbitDirDescriptor = 'SENSING_ORBIT_DIRECTION'
+      idDescriptor = 'DATASTRIP_ID'
       break
     default:
       collectionSource = 'COPERNICUS/S2'
       cloudDescriptor = 'CLOUDY_PIXEL_PERCENTAGE'
       nameDescriptor = 'Name'
       orbitDirDescriptor = 'SENSING_ORBIT_DIRECTION'
+      idDescriptor = 'DATASTRIP_ID'
   }
   return {
       collectionSource: collectionSource,
       cloudDescriptor: cloudDescriptor,
       nameDescriptor: nameDescriptor,
-      orbitDirDescriptor: orbitDirDescriptor
+      orbitDirDescriptor: orbitDirDescriptor,
+      idDescriptor: idDescriptor
   };
 }
 
