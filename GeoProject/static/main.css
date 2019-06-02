@@ -171,13 +171,13 @@ hr.style14 {
 }
 
 .slidecontainer {
-  width: 80%; /* Width of the outside container */
+  width: 100%; /* Width of the outside container */
 
 }
 
 /* The slider itself */
 .slider {
-  width: 80%; /* Full-width */
+  width: 89%; /* Full-width */
   height: 25px; /* Specified height */
   background: rgb(47, 91, 183); /* Grey background */
   outline: none; /* Remove outline */
@@ -189,7 +189,7 @@ hr.style14 {
 }
 
 #sliderValue {
-  width: 15%;
+  width: 8%;
   height: 25px;
   font-size: 15px;
   font-weight: 700;
