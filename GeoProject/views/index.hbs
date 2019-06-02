@@ -68,11 +68,11 @@
             </ul>
           </div>
       </div>
-      <div id="downloadLink" class="col-6 mt-3">
+      <div class="col-6 mt-3">
           {{!-- <button id="buttonColor" class="btn btn-primary downloadButton"><i class="fas fa-file-download"></i>
 
           </button>  --}}
-          <a href="" class="btn btn-primary downloadButton active" role="button" aria-pressed="true"><i class="fas fa-file-download"></i></a>
+          <a id="downloadLink" class="btn btn-primary downloadButton active" role="button" aria-pressed="true" ><i class="fas fa-file-download"></i></a>
       </div>
     </div>
       <div class="row">
@@ -201,6 +201,7 @@
   var divStatistic = document.getElementById("containerStatGen")
   var form = document.getElementById("myForm")
   var errorDate = document.getElementById("errorDate")
+  var downloadLink = document.getElementById("downloadLink")
 
   $(icnLoad).hide()
 
@@ -260,19 +261,7 @@
     ClearGranules()
 
 
-    function download(filename, text) {
 
-      var element = document.createElement('a');
-      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-      element.setAttribute('download', filename);
-
-      element.style.display = 'none';
-      document.body.appendChild(element);
-
-      element.click();
-
-      document.body.removeChild(element);
-    }
     $.ajax({
         url: '/filter',
         dataType : 'json', // Try text also, maybe the api donn't send result in json. Text always work.
@@ -317,18 +306,11 @@
               var txt="<li><a class='dropdown-item' onclick=openGranuleStat('"+element+"') onmouseover=highlightGranule('"+element+"')>" + element + ": covering "+ areas[index]+"% of bbox</a></li>"
               $("#granuleName").append(txt)
             })
-            $("#downloadLink").html('<id="buttonColor" class="btn btn-primary" role="button" aria-pressed="true" onclick = download(\'tiles.txt\', '+downloadNames+')"><i class="fas fa-file-download"></i></a>')
 
-            //element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(downloadNames) + '" id="buttonColor" class="btn btn-primary downloadButton active" role="button" aria-pressed="true" download="Tiles.txt"><i class="fas fa-file-download"></i></a>');
-            // element.setAttribute('download', filename);
-            //
-            // element.style.display = 'none';
-            // document.body.appendChild(element);
-            //
-            // element.click();
-            //
-            // document.body.removeChild(element);
-            download("hello.txt",downloadNames);
+            //allow to download the txt pressing the button
+            downloadLink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(downloadNames));
+            downloadLink.setAttribute('download', 'tiles.txt');
+
             $("#imageNumber").html("<p>" + count + "</p>")
             $("#avgCloud").html("<p>" + cloudsAvg + "%</p>")
             $("#numOfGranules").html("<p>" + names.length + "</p>")

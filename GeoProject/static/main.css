@@ -207,6 +207,8 @@ hr.style14 {
     float: right;
     width: 40px;
     padding: 6px;
+    background-color: rgb(47, 91, 183);
+    border: 0;
 }
 
 
