@@ -118,7 +118,7 @@
     var list = '{{downloadNames}}';
     list = list.replace(/"/g, '').replace(/,/g, "\n")
     downloadLink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(list));
-    downloadLink.setAttribute('download', 'Tile_'+{{name}}+'.txt');
+    downloadLink.setAttribute('download', 'Tile_{{name}}.txt');
 
 
     var ctx = document.getElementById('CloudChart').getContext('2d');
