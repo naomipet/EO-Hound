@@ -27,7 +27,7 @@ app.use(bodyParser.json())
 
 app.get('/', (request, response) => {
 
-  response.render('index', {addLayer: false} )
+  response.render('index')
 })
 
 app.get('/filter', (request, response) => {
@@ -369,7 +369,7 @@ GetCollectionParams = function(name){
       cloudDescriptor = 'CLOUDY_PIXEL_PERCENTAGE'
       nameDescriptor = 'Name'
       orbitDirDescriptor = 'SENSING_ORBIT_DIRECTION'
-      idDescriptor = 'DATASTRIP_ID'
+      idDescriptor = 'PRODUCT_ID'
       footprintSource = 'users/naomipet/sentinel2_tiles_world'
       break
     default:
@@ -378,7 +378,7 @@ GetCollectionParams = function(name){
       cloudDescriptor = 'CLOUDY_PIXEL_PERCENTAGE'
       nameDescriptor = 'Name'
       orbitDirDescriptor = 'SENSING_ORBIT_DIRECTION'
-      idDescriptor = 'DATASTRIP_ID'
+      idDescriptor = 'PRODUCT_ID'
       footprintSource = 'users/naomipet/sentinel2_tiles_world'
   }
   return {
